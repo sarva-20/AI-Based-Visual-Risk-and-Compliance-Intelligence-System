@@ -196,12 +196,12 @@ def _simple_page(title, message):
 
 @app.route("/privacy")
 def privacy():
-    return _simple_page("Privacy", "Your privacy matters to us.")
+    return render_template("privacy.html")
 
 
 @app.route("/terms")
 def terms():
-    return _simple_page("Terms", "Please review the terms of use for this application.")
+    return render_template("terms.html")
 
 
 @app.route("/contact")
