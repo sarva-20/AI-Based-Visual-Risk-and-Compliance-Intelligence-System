@@ -267,6 +267,32 @@ def admin_dashboard():
     return render_template("user/dashboard.html", user=current_user, metrics=calculate_financial_metrics(current_user), gpa=predict_gpa(current_user), total_fitness=sum(log.duration_min for log in current_user.fitness_logs), months=[], income_data=[], expense_data=[], study_days=[], study_hours=[], fitness_days=[], fitness_minutes=[], goal_progress=[], savings_forecast=[], gpa_forecast=[], projected_fitness=0, total_study_hours=0, study_streak=0, fitness_streak=0, subjects=[], subject_hours=[], activities=[], activity_minutes=[], life_score=0)
 
 
+@app.route("/admin/users")
+@login_required
+def admin_users():
+    if not current_user.is_admin:
+        return redirect(url_for("user_dashboard"))
+    return _simple_page("Manage Users", "User management is available to administrators.")
+
+
+@app.route("/user/simulation")
+@login_required
+def user_simulation():
+    return _simple_page("Simulation", "Scenario simulation is ready for configuration.")
+
+
+@app.route("/user/assistant")
+@login_required
+def user_assistant():
+    return _simple_page("Assistant", "The AI assistant is ready for configuration.")
+
+
+@app.route("/settings")
+@login_required
+def settings():
+    return _simple_page("Settings", "Account settings are ready for configuration.")
+
+
 @app.route("/user/dashboard")
 @login_required
 def user_dashboard():
