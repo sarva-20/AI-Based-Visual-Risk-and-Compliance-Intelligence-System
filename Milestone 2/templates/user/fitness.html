@@ -202,3 +202,11 @@
 
 {% block scripts %}
 <script>
+{% if dates %}
+new Chart(document.getElementById('fitnessHoursChart'), {type: 'line', data: {labels: {{ dates|tojson }}, datasets: [{data: {{ daily_data|tojson }}, borderColor: '#0f766e', backgroundColor: 'rgba(15,118,110,0.12)', fill: true, tension: 0.35, pointRadius: 3}]}, options: {responsive: true, plugins: {legend: {display: false}}, scales: {y: {beginAtZero: true}}}});
+{% endif %}
+{% if activities %}
+new Chart(document.getElementById('activityChart'), {type: 'doughnut', data: {labels: {{ activities|tojson }}, datasets: [{data: {{ activity_minutes|tojson }}, backgroundColor: ['#0f766e', '#22c55e', '#14b8a6', '#84cc16', '#2dd4bf', '#86efac']}]}, options: {responsive: true, plugins: {legend: {position: 'bottom'}}}});
+{% endif %}
+</script>
+{% endblock %}
