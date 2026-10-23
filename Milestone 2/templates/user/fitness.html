@@ -1,0 +1,204 @@
+{% extends "base.html" %}
+
+{% block title %}Fitness Intelligence | Visual Risk and AI Intelligence{% endblock %}
+
+{% block extra_css %}
+<style>
+    .fitness-wrapper {
+        padding: 1.25rem;
+        border-radius: 24px;
+        background: linear-gradient(145deg, var(--bg-wrapper), var(--bg-card));
+    }
+
+    .fitness-hero {
+        position: relative;
+        overflow: hidden;
+        padding: 1.5rem;
+        border-radius: 20px;
+        color: white;
+        background: linear-gradient(120deg, #155e75, #0f766e 62%, #22c55e);
+    }
+
+    .fitness-hero::after {
+        content: "";
+        position: absolute;
+        width: 180px;
+        height: 180px;
+        right: -55px;
+        bottom: -95px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 50%;
+        box-shadow: 0 0 0 24px rgba(255, 255, 255, 0.04);
+    }
+
+    .fitness-hero-content { position: relative; z-index: 1; }
+    .fitness-hero h1 { font-size: clamp(1.8rem, 4vw, 2.8rem); font-weight: 700; }
+    .fitness-hero p { max-width: 620px; margin-bottom: 0; opacity: 0.85; }
+
+    .fitness-card {
+        height: 100%;
+        border: 1px solid var(--border-color);
+        border-radius: 20px;
+        background: var(--bg-card);
+        box-shadow: var(--shadow);
+    }
+
+    .fitness-card-header {
+        padding: 0.9rem 1.1rem;
+        border-bottom: 1px solid var(--border-color);
+        color: var(--text-primary);
+        font-weight: 700;
+    }
+
+    .fitness-card-body { padding: 1.1rem; }
+
+    .fitness-metric {
+        height: 100%;
+        padding: 1rem;
+        border-radius: 16px;
+        background: var(--bg-card);
+        box-shadow: var(--shadow);
+        border: 1px solid var(--border-color);
+    }
+
+    .fitness-metric .metric-icon {
+        width: 38px;
+        height: 38px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 12px;
+        color: white;
+        background: linear-gradient(135deg, #0f766e, #22c55e);
+    }
+
+    .fitness-metric .value { color: var(--text-primary); font-size: 1.55rem; font-weight: 800; }
+    .fitness-metric .label { color: var(--text-muted); font-size: 0.76rem; text-transform: uppercase; letter-spacing: 0.05em; }
+
+    .fitness-form .form-control,
+    .fitness-form .form-select { border-radius: 10px; }
+
+    .fitness-form .btn {
+        width: 100%;
+        color: white;
+        background: linear-gradient(135deg, #0f766e, #22c55e);
+    }
+
+    .fitness-form .btn:hover { color: white; box-shadow: 0 8px 25px rgba(16, 185, 129, 0.3); }
+    .chart-wrap { min-height: 250px; }
+    .chart-wrap canvas { max-height: 220px; }
+
+    .activity-row {
+        padding: 0.75rem 0;
+        border-bottom: 1px solid var(--border-color);
+    }
+
+    .activity-row:last-child { border-bottom: 0; }
+    .activity-bar { height: 7px; border-radius: 99px; background: var(--progress-bg); overflow: hidden; }
+    .activity-bar span { display: block; height: 100%; border-radius: inherit; background: linear-gradient(90deg, #0f766e, #22c55e); }
+
+    .fitness-table th {
+        color: var(--text-muted);
+        font-size: 0.72rem;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+    }
+
+    .fitness-table td { color: var(--text-primary); font-size: 0.86rem; vertical-align: middle; }
+    .fitness-empty { color: var(--text-muted); }
+
+    @media (max-width: 768px) {
+        .fitness-wrapper { padding: 0.6rem; }
+        .fitness-hero { padding: 1.25rem; }
+        .fitness-card-body { padding: 0.9rem; }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="fitness-wrapper">
+    <section class="fitness-hero mb-4">
+        <div class="fitness-hero-content d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+            <div>
+                <span class="badge bg-light text-dark mb-2">Fitness Intelligence</span>
+                <h1 class="mb-2">Build momentum, one session at a time.</h1>
+                <p>Track your movement, understand your activity patterns, and keep your health goals visible.</p>
+            </div>
+            <div class="text-md-end">
+                <div class="small opacity-75">Current streak</div>
+                <strong>{{ streak or 0 }} day{{ '' if (streak or 0) == 1 else 's' }}</strong>
+            </div>
+        </div>
+    </section>
+
+    <div class="row g-3 mb-4">
+        <div class="col-6 col-lg-3"><div class="fitness-metric"><div class="metric-icon mb-2"><i class="fas fa-stopwatch"></i></div><div class="value">{{ total_min|round(0) }}m</div><div class="label">Total activity</div></div></div>
+        <div class="col-6 col-lg-3"><div class="fitness-metric"><div class="metric-icon mb-2"><i class="fas fa-fire"></i></div><div class="value">{{ total_cal|round(0) }}</div><div class="label">Calories burned</div></div></div>
+        <div class="col-6 col-lg-3"><div class="fitness-metric"><div class="metric-icon mb-2"><i class="fas fa-chart-line"></i></div><div class="value">{{ avg_min_per_day|round(1) }}m</div><div class="label">Average per day</div></div></div>
+        <div class="col-6 col-lg-3"><div class="fitness-metric"><div class="metric-icon mb-2"><i class="fas fa-calendar-week"></i></div><div class="value">{{ weekly_min|round(0) }}m</div><div class="label">This week</div></div></div>
+    </div>
+
+    <div class="row g-3 mb-4">
+        <div class="col-lg-4">
+            <section class="fitness-card">
+                <div class="fitness-card-header"><i class="fas fa-plus-circle text-success me-2"></i>Log a fitness session</div>
+                <div class="fitness-card-body">
+                    <form class="fitness-form" method="post" action="{{ url_for('user_fitness') }}">
+                        <div class="mb-3"><label class="form-label small fw-semibold" for="fitness-date">Date</label><input class="form-control" id="fitness-date" name="date" type="date" value="{{ datetime.now().strftime('%Y-%m-%d') }}" required></div>
+                        <div class="mb-3"><label class="form-label small fw-semibold" for="fitness-activity">Activity</label><input class="form-control" id="fitness-activity" name="activity" type="text" placeholder="e.g. Running" required></div>
+                        <div class="mb-3"><label class="form-label small fw-semibold" for="fitness-duration">Duration in minutes</label><input class="form-control" id="fitness-duration" name="duration" type="number" min="1" step="1" placeholder="e.g. 30" required></div>
+                        <div class="mb-3"><label class="form-label small fw-semibold" for="fitness-calories">Calories burned</label><input class="form-control" id="fitness-calories" name="calories" type="number" min="0" step="1" placeholder="Optional"></div>
+                        <button class="btn" type="submit"><i class="fas fa-save me-2"></i>Save fitness session</button>
+                    </form>
+                </div>
+            </section>
+        </div>
+
+        <div class="col-lg-8">
+            <div class="row g-3 h-100">
+                <div class="col-md-6"><section class="fitness-card chart-wrap"><div class="fitness-card-header"><i class="fas fa-chart-line text-success me-2"></i>Daily activity</div><div class="fitness-card-body"><canvas id="fitnessHoursChart"></canvas>{% if not dates %}<p class="fitness-empty text-center small">Log sessions to see your trend.</p>{% endif %}</div></section></div>
+                <div class="col-md-6"><section class="fitness-card chart-wrap"><div class="fitness-card-header"><i class="fas fa-layer-group text-primary me-2"></i>Activity breakdown</div><div class="fitness-card-body"><canvas id="activityChart"></canvas>{% if not activities %}<p class="fitness-empty text-center small">Your activity mix will appear here.</p>{% endif %}</div></section></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-3">
+        <div class="col-lg-5">
+            <section class="fitness-card h-100">
+                <div class="fitness-card-header"><i class="fas fa-person-running text-success me-2"></i>Activity focus</div>
+                <div class="fitness-card-body">
+                    {% if activities %}
+                        {% set activity_total = activity_minutes|sum %}
+                        {% for activity in activities %}
+                        <div class="activity-row">
+                            <div class="d-flex justify-content-between mb-2"><span class="fw-semibold">{{ activity }}</span><span class="text-muted small">{{ activity_minutes[loop.index0]|round(0) }}m</span></div>
+                            <div class="activity-bar"><span style="width: {{ (activity_minutes[loop.index0] / activity_total * 100) if activity_total else 0 }}%;"></span></div>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <p class="fitness-empty text-center mb-0 py-4">Your activity breakdown will appear after your first session.</p>
+                    {% endif %}
+                </div>
+            </section>
+        </div>
+
+        <div class="col-lg-7">
+            <section class="fitness-card h-100">
+                <div class="fitness-card-header d-flex justify-content-between align-items-center"><span><i class="fas fa-history text-success me-2"></i>Recent sessions</span><span class="badge bg-light text-dark">{{ logs|length }} shown</span></div>
+                <div class="table-responsive">
+                    <table class="table fitness-table align-middle mb-0"><thead><tr><th>Date</th><th>Activity</th><th>Duration</th><th>Calories</th><th></th></tr></thead><tbody>
+                        {% for log in logs %}
+                        <tr><td>{{ log.date.strftime('%d %b') }}</td><td class="fw-semibold">{{ log.activity or 'General activity' }}</td><td>{{ log.duration_min }}m</td><td>{{ log.calories_burned or 0 }}</td><td><form method="post" action="{{ url_for('delete_fitness', log_id=log.id) }}" onsubmit="return confirm('Delete this fitness session?');"><button class="btn btn-sm btn-outline-danger" type="submit" aria-label="Delete fitness session"><i class="fas fa-trash-alt"></i></button></form></td></tr>
+                        {% else %}
+                        <tr><td colspan="5" class="fitness-empty text-center py-4">No fitness sessions logged yet.</td></tr>
+                        {% endfor %}
+                    </tbody></table>
+                </div>
+            </section>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
