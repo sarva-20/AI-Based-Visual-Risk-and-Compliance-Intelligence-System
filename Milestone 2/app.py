@@ -178,6 +178,57 @@ def create_default_admin():
         admin.set_password("admin123")
         db.session.add(admin)
         db.session.commit()
+    return admin
+
+
+def seed_demo_data(user):
+    """Add representative study and fitness records once for the demo user."""
+    today = datetime.now().date()
+    if not StudyLog.query.filter_by(user_id=user.id, subject="Python").first():
+        study_sessions = [
+            (13, 1.5, "Python", 78),
+            (11, 2.0, "Machine Learning", 84),
+            (9, 1.0, "Database Systems", 72),
+            (7, 2.5, "Python", 88),
+            (5, 1.5, "Machine Learning", 81),
+            (3, 2.0, "Database Systems", 90),
+            (1, 2.5, "Python", 92),
+        ]
+        db.session.add_all(
+            [
+                StudyLog(
+                    user_id=user.id,
+                    date=today - timedelta(days=days_ago),
+                    hours=hours,
+                    subject=subject,
+                    productivity_score=productivity,
+                )
+                for days_ago, hours, subject, productivity in study_sessions
+            ]
+        )
+    if not FitnessLog.query.filter_by(user_id=user.id, activity="Walking").first():
+        fitness_sessions = [
+            (13, "Walking", 35, 155),
+            (11, "Strength training", 45, 280),
+            (9, "Cycling", 40, 320),
+            (7, "Running", 30, 295),
+            (5, "Yoga", 25, 90),
+            (3, "Strength training", 50, 315),
+            (1, "Running", 35, 340),
+        ]
+        db.session.add_all(
+            [
+                FitnessLog(
+                    user_id=user.id,
+                    date=today - timedelta(days=days_ago),
+                    activity=activity,
+                    duration_min=duration,
+                    calories_burned=calories,
+                )
+                for days_ago, activity, duration, calories in fitness_sessions
+            ]
+        )
+    db.session.commit()
 
 
 @login_manager.user_loader
@@ -412,7 +463,29 @@ def user_study():
         if log.subject:
             subjects[log.subject] += log.hours
     dates = sorted(by_day)[-14:]
-    return render_template("user/study.html", user=current_user, logs=logs[-10:][::-1], gpa=predict_gpa(current_user), study_dates=dates, study_hours=[by_day[d] for d in dates], subjects=list(subjects), subject_hours=list(subjects.values()), prod_dates=[], prod_avg=[], total_hours=sum(log.hours for log in logs), avg_productivity=sum(log.productivity_score or 0 for log in logs) / len(logs) if logs else 0, study_streak=0)
+    productivity_by_day = defaultdict(list)
+    for log in logs:
+        productivity_by_day[log.date.strftime("%Y-%m-%d")].append(log.productivity_score or 0)
+    productivity_dates = sorted(productivity_by_day)[-14:]
+    productivity_average = [
+        sum(productivity_by_day[date]) / len(productivity_by_day[date])
+        for date in productivity_dates
+    ]
+    return render_template(
+        "user/study.html",
+        user=current_user,
+        logs=logs[-10:][::-1],
+        gpa=predict_gpa(current_user),
+        study_days=dates,
+        study_hours=[by_day[d] for d in dates],
+        subjects=list(subjects),
+        subject_hours=list(subjects.values()),
+        prod_dates=productivity_dates,
+        prod_avg=productivity_average,
+        total_hours=sum(log.hours for log in logs),
+        avg_productivity=sum(log.productivity_score or 0 for log in logs) / len(logs) if logs else 0,
+        study_streak=0,
+    )
 
 
 @app.route("/edit_study_log", methods=["POST"])
@@ -496,5 +569,6 @@ def delete_fitness(log_id):
 if __name__ == "__main__":
     with app.app_context():
         db.create_all()
-        create_default_admin()
+        demo_user = create_default_admin()
+        seed_demo_data(demo_user)
     app.run(host="127.0.0.1", port=5050, debug=True)
