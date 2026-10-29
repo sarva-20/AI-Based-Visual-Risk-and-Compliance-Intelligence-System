@@ -299,6 +299,7 @@
                 return;
             }
 
+            const formData = new FormData(chatForm);
             addMessage('user', '{{ user.username }}', question);
             queryInput.value = '';
             sendButton.disabled = true;
@@ -320,7 +321,6 @@
             chatBody.appendChild(thinkingBubble);
             chatBody.scrollTop = chatBody.scrollHeight;
 
-            const formData = new FormData(chatForm);
             fetch(chatForm.action, {
                 method: 'POST',
                 headers: {
