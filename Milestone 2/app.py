@@ -1,16 +1,17 @@
 from collections import defaultdict
 from datetime import datetime, timedelta
 import os
+from pathlib import Path
 
 import numpy as np
 from dotenv import load_dotenv
-from flask import Flask, flash, redirect, render_template, request, url_for
+from flask import Flask, flash, jsonify, redirect, render_template, request, url_for
 from flask_login import LoginManager, UserMixin, current_user, login_required, login_user, logout_user
 from flask_sqlalchemy import SQLAlchemy
 from sklearn.linear_model import LinearRegression
 from werkzeug.security import check_password_hash, generate_password_hash
 
-load_dotenv()
+load_dotenv(Path(__file__).resolve().parents[1] / ".env")
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = os.getenv("SECRET_KEY", "dev-key-change-in-production")
@@ -27,16 +28,18 @@ def utility_processor():
 
 
 try:
-    import google.generativeai as genai
+    from google import genai
+    from google.genai import errors as genai_errors
 except ImportError:
     genai = None
+    genai_errors = None
 
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-flash-lite-latest")
 if genai is not None and GEMINI_API_KEY:
-    genai.configure(api_key=GEMINI_API_KEY)
-    gemini_model = genai.GenerativeModel("gemini-2.5-flash")
+    gemini_client = genai.Client(api_key=GEMINI_API_KEY)
 else:
-    gemini_model = None
+    gemini_client = None
 
 
 class User(UserMixin, db.Model):
@@ -332,10 +335,61 @@ def user_simulation():
     return _simple_page("Simulation", "Scenario simulation is ready for configuration.")
 
 
-@app.route("/user/assistant")
+@app.route("/user/assistant", methods=["GET", "POST"])
 @login_required
 def user_assistant():
-    return _simple_page("Assistant", "The AI assistant is ready for configuration.")
+    if request.method == "POST":
+        question = request.form.get("query", "").strip()
+        if not question:
+            if request.headers.get("X-Requested-With") == "XMLHttpRequest":
+                return jsonify({"status": "error", "message": "Please enter a question."}), 400
+            flash("Please enter a question.", "warning")
+            return redirect(url_for("user_assistant"))
+
+        response = (
+            "I can help you think through finances, study planning, fitness, and life goals. "
+            "Try asking for a specific recommendation based on one of those areas."
+        )
+        if gemini_client is not None:
+            prompt = (
+                "You are a concise personal decision-support assistant. "
+                "Give practical, safe advice about finances, study, fitness, or goals. "
+                f"User question: {question}"
+            )
+            try:
+                generated = gemini_client.models.generate_content(
+                    model=GEMINI_MODEL,
+                    contents=prompt,
+                )
+                response = getattr(generated, "text", response)
+            except (AttributeError, ValueError, TypeError):
+                flash("The AI assistant could not generate a response. Showing the offline response instead.", "warning")
+            except Exception:
+                flash("The AI assistant could not generate a response. Showing the offline response instead.", "warning")
+
+        message = ChatMessage(user_id=current_user.id, question=question, response=response)
+        db.session.add(message)
+        db.session.commit()
+
+        if request.headers.get("X-Requested-With") == "XMLHttpRequest":
+            return jsonify({
+                "status": "success",
+                "question": message.question,
+                "response": message.response,
+                "message_id": message.id,
+                "timestamp": message.timestamp.isoformat(),
+            })
+
+        return redirect(url_for("user_assistant"))
+
+    messages = ChatMessage.query.filter_by(user_id=current_user.id).order_by(ChatMessage.timestamp.desc()).all()
+    if request.args.get("new"):
+        messages = []
+    elif request.args.get("load"):
+        selected = ChatMessage.query.filter_by(id=request.args["load"], user_id=current_user.id).first()
+        if selected is not None:
+            messages = [selected]
+    return render_template("user/assistance.html", user=current_user, all_messages=messages)
 
 
 @app.route("/settings")
