@@ -1,0 +1,247 @@
+{% extends "base.html" %}
+
+{% block title %}Terms of Service | Visual Risk and AI Intelligence{% endblock %}
+
+{% block extra_css %}
+<style>
+    .terms-wrapper {
+        background: var(--bg-wrapper);
+        margin: -1.5rem -1.5rem 0;
+        padding-bottom: 4rem;
+    }
+
+    .terms-hero {
+        position: relative;
+        overflow: hidden;
+        padding: 4rem 0 3.5rem;
+        color: white;
+        background: var(--accent-gradient);
+        border-radius: 0 0 40px 40px;
+    }
+
+    .terms-hero::after {
+        content: "";
+        position: absolute;
+        width: 260px;
+        height: 260px;
+        right: -80px;
+        top: -100px;
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        border-radius: 50%;
+        box-shadow: 0 0 0 28px rgba(255, 255, 255, 0.05), 0 0 0 56px rgba(255, 255, 255, 0.04);
+    }
+
+    .terms-hero .container {
+        position: relative;
+        z-index: 1;
+    }
+
+    .terms-hero h1 {
+        font-size: clamp(2.4rem, 6vw, 4.25rem);
+        font-weight: 700;
+    }
+
+    .terms-hero p {
+        max-width: 680px;
+        font-size: 1.15rem;
+        opacity: 0.92;
+    }
+
+    .terms-hero-art {
+        width: 150px;
+        filter: drop-shadow(0 12px 24px rgba(0, 0, 0, 0.2));
+    }
+
+    .terms-content {
+        position: relative;
+        z-index: 2;
+        margin-top: -1.5rem;
+    }
+
+    .terms-card {
+        height: 100%;
+        padding: 2rem;
+        border: 1px solid var(--border-color);
+        border-radius: 22px;
+        background: var(--bg-card);
+        box-shadow: var(--shadow);
+    }
+
+    .terms-icon {
+        width: 52px;
+        height: 52px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 1rem;
+        border-radius: 14px;
+        color: white;
+        background: var(--accent-gradient);
+        font-size: 1.2rem;
+    }
+
+    .terms-card h2 {
+        margin-bottom: 0.75rem;
+        font-size: 1.35rem;
+        font-weight: 700;
+    }
+
+    .terms-card p,
+    .terms-card li {
+        color: var(--text-muted);
+        line-height: 1.7;
+    }
+
+    .terms-card ul {
+        padding-left: 1.2rem;
+        margin-bottom: 0;
+    }
+
+    .terms-highlight {
+        border-left: 3px solid var(--accent);
+        background: var(--bg-wrapper);
+    }
+
+    .terms-date {
+        color: rgba(255, 255, 255, 0.75);
+        font-size: 0.9rem;
+    }
+
+    @media (max-width: 768px) {
+        .terms-wrapper { margin-inline: -0.75rem; }
+        .terms-hero { padding: 3.5rem 0 3rem; border-radius: 0 0 32px 32px; }
+        .terms-hero-art { width: 105px; margin-top: 1.5rem; }
+        .terms-card { padding: 1.5rem; }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="terms-wrapper">
+    <section class="terms-hero">
+        <div class="container">
+            <div class="row align-items-center g-4">
+                <div class="col-lg-8">
+                    <span class="badge-light-custom mb-3 d-inline-block">Please read carefully</span>
+                    <h1><i class="fas fa-file-contract me-2"></i>Terms of Service</h1>
+                    <p class="mb-2">These terms explain the rules for using Visual Risk and AI Intelligence.</p>
+                    <span class="terms-date">Last updated: October 2026</span>
+                </div>
+                <div class="col-lg-4 text-lg-end text-center">
+                    <img class="terms-hero-art" src="https://img.icons8.com/fluency/240/000000/artificial-intelligence.png" alt="Artificial intelligence terms illustration">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <main class="container terms-content">
+        <div class="row g-4">
+            <div class="col-lg-6">
+                <section class="terms-card">
+                    <div class="terms-icon"><i class="fas fa-handshake"></i></div>
+                    <h2>Acceptance of These Terms</h2>
+                    <p class="mb-0">
+                        By accessing or using the application, you agree to follow these Terms of Service
+                        and all applicable laws. If you do not agree, please do not use the application.
+                    </p>
+                </section>
+            </div>
+
+            <div class="col-lg-6">
+                <section class="terms-card">
+                    <div class="terms-icon"><i class="fas fa-user-check"></i></div>
+                    <h2>Account Responsibilities</h2>
+                    <ul>
+                        <li>Provide accurate information when creating your account.</li>
+                        <li>Keep your login credentials private and secure.</li>
+                        <li>Notify the administrator if you suspect unauthorized access.</li>
+                        <li>You are responsible for activity performed through your account.</li>
+                    </ul>
+                </section>
+            </div>
+
+            <div class="col-lg-6">
+                <section class="terms-card">
+                    <div class="terms-icon"><i class="fas fa-chart-line"></i></div>
+                    <h2>Use of Predictions and Simulations</h2>
+                    <p>
+                        Forecasts, Life Score values, simulations, and recommendations are generated from
+                        available data and are intended for informational and educational purposes only.
+                    </p>
+                    <p class="mb-0">
+                        They are not financial, medical, academic, legal, or professional advice. You are
+                        responsible for evaluating information before making decisions.
+                    </p>
+                </section>
+            </div>
+
+            <div class="col-lg-6">
+                <section class="terms-card">
+                    <div class="terms-icon"><i class="fas fa-robot"></i></div>
+                    <h2>AI Assistant Use</h2>
+                    <p>
+                        The optional AI assistant provides automated responses based on your request and
+                        available profile information. AI responses may be incomplete or inaccurate.
+                    </p>
+                    <p class="mb-0">
+                        Do not use the assistant for emergencies or as a replacement for qualified advice.
+                    </p>
+                </section>
+            </div>
+
+            <div class="col-lg-6">
+                <section class="terms-card">
+                    <div class="terms-icon"><i class="fas fa-ban"></i></div>
+                    <h2>Acceptable Use</h2>
+                    <p>You agree not to:</p>
+                    <ul>
+                        <li>Attempt to gain unauthorized access to accounts or systems.</li>
+                        <li>Upload malicious code or interfere with application availability.</li>
+                        <li>Use the application to violate another person's privacy or rights.</li>
+                        <li>Misrepresent generated insights as guaranteed outcomes.</li>
+                    </ul>
+                </section>
+            </div>
+
+            <div class="col-lg-6">
+                <section class="terms-card">
+                    <div class="terms-icon"><i class="fas fa-code"></i></div>
+                    <h2>Application Availability</h2>
+                    <p class="mb-0">
+                        We may update, improve, restrict, or discontinue parts of the application without
+                        prior notice. We do not guarantee that the service will always be available,
+                        uninterrupted, or error-free.
+                    </p>
+                </section>
+            </div>
+
+            <div class="col-12">
+                <section class="terms-card terms-highlight">
+                    <div class="row align-items-center g-3">
+                        <div class="col-lg-8">
+                            <h2><i class="fas fa-shield-alt text-primary me-2"></i>Privacy and Changes</h2>
+                            <p class="mb-0">
+                                Your use of personal information is also governed by our Privacy Policy.
+                                We may update these terms as the project evolves. Continued use of the
+                                application after an update means you accept the revised terms.
+                            </p>
+                        </div>
+                        <div class="col-lg-4 text-lg-end">
+                            <a class="btn btn-primary" href="{{ url_for('privacy') }}">
+                                <i class="fas fa-lock me-2"></i>Read privacy policy
+                            </a>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <div class="col-12 text-center">
+                <p class="text-muted mb-0">
+                    Questions about these terms?
+                    <a href="{{ url_for('contact') }}" class="text-primary fw-semibold">Contact the project administrator.</a>
+                </p>
+            </div>
+        </div>
+    </main>
+</div>
+{% endblock %}

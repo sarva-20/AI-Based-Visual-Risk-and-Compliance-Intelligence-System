@@ -1,0 +1,222 @@
+{% extends "base.html" %}
+
+{% block title %}Privacy Policy | Visual Risk and AI Intelligence{% endblock %}
+
+{% block extra_css %}
+<style>
+    .privacy-wrapper {
+        background: var(--bg-wrapper);
+        margin: -1.5rem -1.5rem 0;
+        padding-bottom: 4rem;
+    }
+
+    .privacy-hero {
+        position: relative;
+        overflow: hidden;
+        padding: 4rem 0 3.5rem;
+        color: white;
+        background: var(--accent-gradient);
+        border-radius: 0 0 40px 40px;
+    }
+
+    .privacy-hero::after {
+        content: "";
+        position: absolute;
+        width: 260px;
+        height: 260px;
+        right: -80px;
+        top: -100px;
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        border-radius: 50%;
+        box-shadow: 0 0 0 28px rgba(255, 255, 255, 0.05), 0 0 0 56px rgba(255, 255, 255, 0.04);
+    }
+
+    .privacy-hero .container {
+        position: relative;
+        z-index: 1;
+    }
+
+    .privacy-hero h1 {
+        font-size: clamp(2.4rem, 6vw, 4.25rem);
+        font-weight: 700;
+    }
+
+    .privacy-hero p {
+        max-width: 650px;
+        font-size: 1.15rem;
+        opacity: 0.92;
+    }
+
+    .privacy-hero-art {
+        width: 150px;
+        filter: drop-shadow(0 12px 24px rgba(0, 0, 0, 0.2));
+    }
+
+    .privacy-content {
+        position: relative;
+        z-index: 2;
+        margin-top: -1.5rem;
+    }
+
+    .privacy-card {
+        height: 100%;
+        padding: 2rem;
+        border: 1px solid var(--border-color);
+        border-radius: 22px;
+        background: var(--bg-card);
+        box-shadow: var(--shadow);
+    }
+
+    .privacy-icon {
+        width: 52px;
+        height: 52px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 1rem;
+        border-radius: 14px;
+        color: white;
+        background: var(--accent-gradient);
+        font-size: 1.2rem;
+    }
+
+    .privacy-card h2 {
+        margin-bottom: 0.75rem;
+        font-size: 1.35rem;
+        font-weight: 700;
+    }
+
+    .privacy-card p,
+    .privacy-card li {
+        color: var(--text-muted);
+        line-height: 1.7;
+    }
+
+    .privacy-card ul {
+        padding-left: 1.2rem;
+        margin-bottom: 0;
+    }
+
+    .privacy-highlight {
+        border-left: 3px solid var(--accent);
+        background: var(--bg-wrapper);
+    }
+
+    .privacy-date {
+        color: rgba(255, 255, 255, 0.75);
+        font-size: 0.9rem;
+    }
+
+    @media (max-width: 768px) {
+        .privacy-wrapper { margin-inline: -0.75rem; }
+        .privacy-hero { padding: 3.5rem 0 3rem; border-radius: 0 0 32px 32px; }
+        .privacy-hero-art { width: 105px; margin-top: 1.5rem; }
+        .privacy-card { padding: 1.5rem; }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="privacy-wrapper">
+    <section class="privacy-hero">
+        <div class="container">
+            <div class="row align-items-center g-4">
+                <div class="col-lg-8">
+                    <span class="badge-light-custom mb-3 d-inline-block">Your data, your control</span>
+                    <h1><i class="fas fa-shield-alt me-2"></i>Privacy Policy</h1>
+                    <p class="mb-2">Your privacy is important to us. We are committed to protecting your personal data.</p>
+                    <span class="privacy-date">Last updated: October 2026</span>
+                </div>
+                <div class="col-lg-4 text-lg-end text-center">
+                    <img class="privacy-hero-art" src="https://img.icons8.com/fluency/240/000000/artificial-intelligence.png" alt="Artificial intelligence and privacy illustration">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <main class="container privacy-content">
+        <div class="row g-4">
+            <div class="col-lg-6">
+                <section class="privacy-card">
+                    <div class="privacy-icon"><i class="fas fa-database"></i></div>
+                    <h2>Information We Collect</h2>
+                    <p>We collect information that you choose to provide while using Digital Twin AI:</p>
+                    <ul>
+                        <li><strong>Account data</strong> such as username, email, and securely stored password hashes.</li>
+                        <li><strong>Financial data</strong> such as income, expenses, savings, and transactions you choose to log.</li>
+                        <li><strong>Study data</strong> such as study hours, subjects, and productivity scores.</li>
+                        <li><strong>Fitness data</strong> such as activity types, duration, and calories burned.</li>
+                        <li><strong>Goals</strong> such as descriptions, target dates, and completion status.</li>
+                        <li><strong>Chat messages</strong> consisting of questions and responses with the AI assistant.</li>
+                    </ul>
+                </section>
+            </div>
+
+            <div class="col-lg-6">
+                <section class="privacy-card">
+                    <div class="privacy-icon"><i class="fas fa-cogs"></i></div>
+                    <h2>How We Use Your Data</h2>
+                    <p>Your information is used to provide and improve the personal decision-support experience.</p>
+                    <ul>
+                        <li>Display your personal dashboard and activity summaries.</li>
+                        <li>Generate financial, academic, and fitness forecasts.</li>
+                        <li>Calculate progress indicators such as savings rate and Life Score.</li>
+                        <li>Provide simulations and personalized recommendations.</li>
+                        <li>Maintain your account, authentication, and saved preferences.</li>
+                    </ul>
+                </section>
+            </div>
+
+            <div class="col-lg-6">
+                <section class="privacy-card">
+                    <div class="privacy-icon"><i class="fas fa-lock"></i></div>
+                    <h2>How We Protect Your Data</h2>
+                    <p>We use reasonable safeguards to protect the information stored by the application.</p>
+                    <ul>
+                        <li>Passwords are hashed using Werkzeug before storage.</li>
+                        <li>Login sessions are managed through Flask-Login.</li>
+                        <li>Administrative features are restricted by user roles.</li>
+                        <li>Sensitive configuration uses environment variables.</li>
+                        <li>Development data is stored locally in SQLite.</li>
+                    </ul>
+                </section>
+            </div>
+
+            <div class="col-lg-6">
+                <section class="privacy-card">
+                    <div class="privacy-icon"><i class="fas fa-robot"></i></div>
+                    <h2>AI and Third-Party Services</h2>
+                    <p>
+                        The optional Gemini-powered assistant may process the information needed to answer
+                        your request when its API integration is enabled. The Gemini API key is configured
+                        through an environment variable and is not stored in the application interface.
+                    </p>
+                    <p class="mb-0">
+                        External libraries and content services may have their own privacy policies and terms.
+                    </p>
+                </section>
+            </div>
+
+            <div class="col-12">
+                <section class="privacy-card privacy-highlight">
+                    <div class="row align-items-center g-3">
+                        <div class="col-lg-8">
+                            <h2><i class="fas fa-user-check text-primary me-2"></i>Your Choices</h2>
+                            <p class="mb-0">
+                                You decide which financial, study, fitness, and goal information to record.
+                                You can stop using the application at any time. For questions about your data
+                                or this policy, contact the project administrator.
+                            </p>
+                        </div>
+                        <div class="col-lg-4 text-lg-end">
+                            <a class="btn btn-primary" href="{{ url_for('contact') }}">
+                                <i class="fas fa-envelope me-2"></i>Contact us
+                            </a>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </main>
+</div>
+{% endblock %}
