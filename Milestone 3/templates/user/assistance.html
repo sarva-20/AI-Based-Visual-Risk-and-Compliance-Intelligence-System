@@ -1,0 +1,369 @@
+{% extends "base.html" %}
+
+{% block title %}AI Assistant | Visual Risk and AI Intelligence{% endblock %}
+
+{% block extra_css %}
+<style>
+    .assistant-wrapper {
+        padding: 1rem;
+        border-radius: 24px;
+        background: linear-gradient(145deg, var(--bg-wrapper), var(--bg-card));
+    }
+
+    .assistant-container {
+        display: flex;
+        gap: 1.2rem;
+        min-height: 620px;
+    }
+
+    .history-sidebar,
+    .chat-area {
+        border: 1px solid var(--border-color);
+        border-radius: 22px;
+        background: var(--bg-card);
+        box-shadow: var(--shadow);
+    }
+
+    .history-sidebar {
+        width: 270px;
+        max-height: 700px;
+        flex-shrink: 0;
+        overflow-y: auto;
+        padding: 1rem 0.8rem;
+    }
+
+    .history-sidebar h6 {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 0.2rem 0.8rem;
+        border-bottom: 1px solid var(--border-color);
+        color: var(--text-primary);
+        font-weight: 700;
+    }
+
+    .history-sidebar h6 i { color: var(--accent); }
+
+    .btn-new-chat {
+        border: 0;
+        border-radius: 30px;
+        padding: 0.25rem 0.9rem;
+        color: white;
+        background: var(--accent-gradient);
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-decoration: none;
+    }
+
+    .history-item {
+        position: relative;
+        overflow: hidden;
+        padding: 0.65rem 0.5rem;
+        border-bottom: 1px solid var(--border-color);
+        border-radius: 12px;
+        cursor: pointer;
+    }
+
+    .history-item:hover { background: var(--bg-wrapper); }
+    .history-item .question { overflow: hidden; color: var(--text-primary); font-size: 0.88rem; text-overflow: ellipsis; white-space: nowrap; }
+    .history-item .timestamp { margin-top: 0.15rem; color: var(--text-muted); font-size: 0.7rem; }
+
+    .chat-area {
+        position: relative;
+        display: flex;
+        flex: 1;
+        min-height: 600px;
+        flex-direction: column;
+        overflow: hidden;
+    }
+
+    .chat-header {
+        display: flex;
+        align-items: center;
+        gap: 0.9rem;
+        padding: 1rem 1.4rem;
+        color: white;
+        background: var(--accent-gradient);
+    }
+
+    .chat-header .avatar,
+    .avatar-small {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        color: white;
+        background: rgba(255, 255, 255, 0.2);
+    }
+
+    .chat-header .avatar { width: 44px; height: 44px; font-size: 1.3rem; }
+    .chat-header h5 { margin: 0; font-weight: 700; }
+    .chat-header small { opacity: 0.85; }
+    .badge-status { margin-left: auto; font-size: 0.75rem; }
+    .badge-status i {
+        color: #48bb78;
+        font-size: 0.5rem;
+        animation: agent-pulse 1.6s ease-in-out infinite;
+    }
+
+    @keyframes agent-pulse {
+        0%, 100% { opacity: 1; transform: scale(1); }
+        50% { opacity: 0.35; transform: scale(0.7); }
+    }
+
+    .chat-body {
+        flex: 1;
+        max-height: 500px;
+        min-height: 350px;
+        overflow-y: auto;
+        padding: 1.5rem;
+        background: var(--bg-wrapper);
+    }
+
+    .chat-message {
+        display: flex;
+        align-items: flex-start;
+        gap: 0.7rem;
+        margin-bottom: 1.1rem;
+    }
+
+    .chat-message.user { flex-direction: row-reverse; }
+    .avatar-small { width: 34px; height: 34px; flex-shrink: 0; color: var(--text-primary); background: var(--accent-gradient); font-size: 0.9rem; font-weight: 700; }
+    .chat-message.assistant .avatar-small { color: var(--accent); background: var(--bg-card); border: 1px solid var(--border-color); }
+    .message-content { max-width: 78%; }
+    .username-label { margin-bottom: 0.2rem; color: var(--text-muted); font-size: 0.7rem; font-weight: 600; }
+    .chat-message.user .username-label { text-align: right; }
+    .bubble { padding: 0.7rem 1rem; border-radius: 18px 18px 18px 4px; background: var(--bg-card); color: var(--text-primary); box-shadow: var(--shadow); white-space: pre-line; }
+    .chat-message.user .bubble { border-radius: 18px 18px 4px 18px; color: white; background: var(--accent-gradient); }
+
+    .empty-state { padding: 4rem 1rem; color: var(--text-muted); text-align: center; }
+    .empty-state i { margin-bottom: 1rem; color: var(--accent); font-size: 3.5rem; opacity: 0.55; }
+    .empty-state h5 { color: var(--text-primary); }
+
+    .chat-input {
+        padding: 0.8rem 1.3rem 1.1rem;
+        border-top: 1px solid var(--border-color);
+        background: var(--bg-card);
+    }
+
+    .chat-input .input-group { overflow: hidden; border: 1px solid var(--border-color); border-radius: 40px; }
+    .chat-input .form-control { border: 0; background: transparent !important; }
+    .chat-input .form-control:focus { box-shadow: none; }
+    .btn-send { border: 0; padding: 0 1.5rem; color: white; background: var(--accent-gradient); }
+    .btn-send.is-processing { cursor: wait; opacity: 0.85; }
+    .processing-status {
+        display: none;
+        margin-top: 0.55rem;
+        color: var(--text-muted);
+        font-size: 0.78rem;
+        text-align: center;
+    }
+    .processing-status.visible { display: block; }
+
+    .quick-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.5rem; margin-top: 0.75rem; }
+    .quick-action { border: 0; border-radius: 30px; padding: 0.35rem 0.9rem; color: white; background: var(--accent-gradient); font-size: 0.78rem; font-weight: 600; }
+    .quick-action:hover { transform: translateY(-2px); }
+
+    @media (max-width: 768px) {
+        .assistant-container { flex-direction: column; }
+        .history-sidebar { width: 100%; max-height: 190px; }
+        .chat-body { max-height: 360px; }
+        .message-content { max-width: 86%; }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="assistant-wrapper">
+    <div class="assistant-container">
+        <aside class="history-sidebar">
+            <h6>
+                <span><i class="fas fa-history me-1"></i>History</span>
+                <a class="btn-new-chat" href="{{ url_for('user_assistant', new=1) }}"><i class="fas fa-plus me-1"></i>New</a>
+            </h6>
+            {% for message in all_messages %}
+            <div class="history-item" onclick="location.href='{{ url_for('user_assistant', load=message.id) }}'">
+                <div class="question">{{ message.question }}</div>
+                <div class="timestamp"><i class="far fa-clock me-1"></i>{{ message.timestamp.strftime('%d %b, %I:%M %p') }}</div>
+            </div>
+            {% else %}
+            <div class="py-3 text-center text-muted small"><i class="fas fa-inbox fa-2x d-block mb-2 opacity-25"></i>No conversations yet.<br>Start chatting!</div>
+            {% endfor %}
+        </aside>
+
+        <section class="chat-area">
+            <header class="chat-header">
+                <div class="avatar"><i class="fas fa-robot"></i></div>
+                <div>
+                    <h5>Digital Twin AI</h5>
+                    <small>Your personal decision assistant</small>
+                </div>
+                <div class="badge-status"><i class="fas fa-circle me-1"></i>Active</div>
+            </header>
+
+            <div class="chat-body" id="chatBody">
+                {% if all_messages %}
+                    {% for message in all_messages|sort(attribute='timestamp') %}
+                    <div class="chat-message user">
+                        <div class="avatar-small">{{ user.username[0]|upper }}</div>
+                        <div class="message-content">
+                            <div class="username-label">{{ user.username }}</div>
+                            <div class="bubble">{{ message.question }}</div>
+                        </div>
+                    </div>
+                    <div class="chat-message assistant">
+                        <div class="avatar-small"><i class="fas fa-robot"></i></div>
+                        <div class="message-content">
+                            <div class="username-label">Digital Twin AI</div>
+                            <div class="bubble">{{ message.response }}</div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                <div class="empty-state">
+                    <i class="fas fa-comment-dots"></i>
+                    <h5>Start a conversation</h5>
+                    <p>Ask me about finances, studies, fitness, or life goals.</p>
+                </div>
+                {% endif %}
+            </div>
+
+            <div class="chat-input">
+                <form method="post" action="{{ url_for('user_assistant') }}" id="chatForm">
+                    <div class="input-group">
+                        <input class="form-control" id="queryInput" name="query" type="text" placeholder="Type your question..." maxlength="500" required>
+                        <button class="btn btn-send" id="sendButton" type="submit"><i class="fas fa-paper-plane me-1"></i>Send</button>
+                    </div>
+                </form>
+                <div class="processing-status" id="processingStatus" aria-live="polite">
+                    <i class="fas fa-spinner fa-spin me-1"></i>Digital Twin AI is thinking...
+                </div>
+                <div class="quick-actions">
+                    <button class="quick-action" type="button" onclick="fillQuery('How can I save more money?')">Save more</button>
+                    <button class="quick-action" type="button" onclick="fillQuery('How can I improve my GPA?')">Improve GPA</button>
+                    <button class="quick-action" type="button" onclick="fillQuery('Give me fitness advice')">Fitness advice</button>
+                    <button class="quick-action" type="button" onclick="fillQuery('Set a goal for me')">Set a goal</button>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    const chatBody = document.getElementById('chatBody');
+    const queryInput = document.getElementById('queryInput');
+    const chatForm = document.getElementById('chatForm');
+    const sendButton = document.getElementById('sendButton');
+    const processingStatus = document.getElementById('processingStatus');
+
+    function fillQuery(text) {
+        queryInput.value = text;
+        queryInput.focus();
+    }
+
+    function addMessage(type, label, text) {
+        const messageDiv = document.createElement('div');
+        messageDiv.className = `chat-message ${type}`;
+
+        const avatar = document.createElement('div');
+        avatar.className = 'avatar-small';
+        avatar.innerHTML = type === 'user' ? '{{ user.username[0]|upper }}' : '<i class="fas fa-robot"></i>';
+
+        const content = document.createElement('div');
+        content.className = 'message-content';
+
+        const username = document.createElement('div');
+        username.className = 'username-label';
+        username.textContent = label;
+
+        const bubble = document.createElement('div');
+        bubble.className = 'bubble';
+        bubble.textContent = text;
+
+        content.appendChild(username);
+        content.appendChild(bubble);
+        messageDiv.appendChild(avatar);
+        messageDiv.appendChild(content);
+        chatBody.appendChild(messageDiv);
+        chatBody.scrollTop = chatBody.scrollHeight;
+    }
+
+    if (chatForm) {
+        chatForm.addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            const question = queryInput.value.trim();
+            if (!question) {
+                return;
+            }
+
+            const formData = new FormData(chatForm);
+            addMessage('user', '{{ user.username }}', question);
+            queryInput.value = '';
+            sendButton.disabled = true;
+            sendButton.classList.add('is-processing');
+            sendButton.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Thinking...';
+            queryInput.readOnly = true;
+            processingStatus.classList.add('visible');
+
+            const waitingLabel = 'Digital Twin AI';
+            const thinkingBubble = document.createElement('div');
+            thinkingBubble.className = 'chat-message assistant';
+            thinkingBubble.innerHTML = `
+                <div class="avatar-small"><i class="fas fa-robot"></i></div>
+                <div class="message-content">
+                    <div class="username-label">${waitingLabel}</div>
+                    <div class="bubble"><i class="fas fa-spinner fa-spin me-1"></i>Thinking...</div>
+                </div>
+            `;
+            chatBody.appendChild(thinkingBubble);
+            chatBody.scrollTop = chatBody.scrollHeight;
+
+            fetch(chatForm.action, {
+                method: 'POST',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: formData
+            })
+            .then(response => response.json().then(data => ({ status: response.status, data })))
+            .then(({ status, data }) => {
+                const assistantMessages = chatBody.querySelectorAll('.chat-message.assistant');
+                const lastAssistantMessage = assistantMessages[assistantMessages.length - 1];
+                if (lastAssistantMessage) {
+                    lastAssistantMessage.remove();
+                }
+
+                if (status >= 400 || !data || data.status !== 'success') {
+                    addMessage('assistant', 'Digital Twin AI', data && data.message ? data.message : 'The assistant could not respond right now.');
+                    return;
+                }
+
+                addMessage('assistant', 'Digital Twin AI', data.response || 'No response returned.');
+            })
+            .catch(() => {
+                const assistantMessages = chatBody.querySelectorAll('.chat-message.assistant');
+                const lastAssistantMessage = assistantMessages[assistantMessages.length - 1];
+                if (lastAssistantMessage) {
+                    lastAssistantMessage.remove();
+                }
+                addMessage('assistant', 'Digital Twin AI', 'The assistant could not respond right now. Please try again.');
+            })
+            .finally(() => {
+                sendButton.disabled = false;
+                sendButton.classList.remove('is-processing');
+                sendButton.innerHTML = '<i class="fas fa-paper-plane me-1"></i>Send';
+                queryInput.readOnly = false;
+                processingStatus.classList.remove('visible');
+                queryInput.focus();
+            });
+        });
+    }
+
+    if (chatBody) {
+        chatBody.scrollTop = chatBody.scrollHeight;
+    }
+</script>
+{% endblock %}
