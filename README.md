@@ -9,4 +9,30 @@
 ![Bootstrap](https://img.shields.io/badge/Bootstrap-7952B3?logo=bootstrap&logoColor=white)
 ![Chart.js](https://img.shields.io/badge/Chart.js-FF6384?logo=chart.js&logoColor=white)
 
-The AI-Based Visual Risk and Compliance Intelligence System is a Flask web application that gives users a unified dashboard for monitoring personal finances, study progress, fitness activity, goals, and predictive insights. Milestone 2 uses Flask, Flask-Login, Flask-SQLAlchemy, SQLite, NumPy, scikit-learn, Jinja templates, Bootstrap, and Chart.js to provide authenticated user workflows, data logging, interactive visualizations, and a responsive light/dark interface, with optional Google Gemini integration planned for the assistant and simulation features.
+## Overview
+
+The AI-Based Visual Risk and Compliance Intelligence System is a personal decision-support web application. It brings financial activity, academic progress, fitness habits, goals, forecasts, and what-if analysis into one authenticated dashboard so users can understand current patterns and make better-informed decisions.
+
+## Core capabilities
+
+- **Personal dashboard:** Summarizes financial, academic, fitness, and goal metrics with visual trends.
+- **Financial intelligence:** Records income and expenses, calculates savings indicators, and produces forecasts.
+- **Study intelligence:** Tracks subjects, study hours, productivity, and GPA estimates.
+- **Fitness intelligence:** Logs activities, duration, calories, streaks, and activity breakdowns.
+- **Future simulation:** Compares scenarios such as saving, investing, spending, studying more, or exercising more, then stores the projected outcome and risk level.
+- **AI assistant:** Provides practical guidance about finances, studies, fitness, and personal goals through optional Google Gemini integration, with an offline fallback when the provider is unavailable.
+- **Authentication and roles:** Supports registration, login, protected user pages, and administrator access.
+
+## Project structure
+
+The project is organized into milestone folders. Each milestone contains a self-contained Flask application and its Jinja templates:
+
+```text
+Milestone 1/   Initial application foundation
+Milestone 2/   Dashboard, finance, study, and fitness workflows
+Milestone 3/   Expanded assistant and future-simulation experience
+```
+
+## Technology
+
+The application uses Flask for web routing, Flask-Login for authentication, Flask-SQLAlchemy with SQLite for persistence, Jinja and Bootstrap for the interface, Chart.js for visualizations, NumPy and scikit-learn for analytical calculations, and Google Gemini for assistant responses when configured.
