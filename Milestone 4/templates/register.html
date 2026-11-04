@@ -1,0 +1,325 @@
+{% extends "base.html" %}
+
+{% block title %}Register | Visual Risk and AI Intelligence{% endblock %}
+
+{% block extra_css %}
+<style>
+    .register-wrapper {
+        min-height: 80vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: radial-gradient(circle at top left, rgba(102, 126, 234, 0.12), transparent 34%), var(--bg-wrapper);
+        margin: -1.5rem -1.5rem 0;
+        padding: 3.5rem 1rem;
+    }
+
+    .register-card {
+        border: 1px solid var(--border-color);
+        border-radius: 22px;
+        box-shadow: 0 24px 70px rgba(45, 55, 72, 0.14);
+        overflow: hidden;
+        width: 100%;
+        max-width: 900px;
+        background: var(--bg-card);
+    }
+
+    .register-left {
+        background: linear-gradient(155deg, #202b58 0%, #3d3b78 58%, #704d9a 100%);
+        color: white;
+        padding: 3.25rem 2.5rem;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: flex-start;
+        text-align: left;
+        min-height: 520px;
+        position: relative;
+    }
+
+    .register-left::after {
+        content: "";
+        position: absolute;
+        width: 190px;
+        height: 190px;
+        right: -80px;
+        bottom: -80px;
+        border: 1px solid rgba(255, 255, 255, 0.16);
+        border-radius: 50%;
+        box-shadow: 0 0 0 24px rgba(255, 255, 255, 0.04), 0 0 0 48px rgba(255, 255, 255, 0.03);
+    }
+
+    .register-left h2 {
+        font-weight: 700;
+        font-size: 2rem;
+        margin-bottom: 1rem;
+        max-width: 240px;
+    }
+
+    .register-left p {
+        opacity: 0.9;
+        font-size: 1.1rem;
+        max-width: 285px;
+        line-height: 1.7;
+    }
+
+    .register-left img {
+        max-width: 130px;
+        margin-bottom: 1.75rem;
+        filter: drop-shadow(0 8px 20px rgba(0, 0, 0, 0.2));
+    }
+
+    .register-right {
+        padding: 3rem 3.25rem;
+        background: var(--bg-card);
+    }
+
+    .register-right h3 {
+        font-weight: 700;
+        color: var(--text-primary);
+        margin-bottom: 0.25rem;
+    }
+
+    .register-right .subtitle {
+        color: var(--text-muted);
+        font-size: 0.95rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .form-floating {
+        margin-bottom: 1rem;
+        position: relative;
+    }
+
+    .form-floating > .form-control {
+        border-radius: 10px;
+        border: 1px solid var(--border-color);
+        transition: border-color 0.2s;
+        padding: 1rem 3rem 1rem 0.75rem;
+        height: calc(3.5rem + 2px);
+    }
+
+    .form-floating > .form-control:focus {
+        border-color: var(--accent);
+        box-shadow: var(--focus-ring);
+    }
+
+    .form-floating > label {
+        padding: 1rem 0.75rem;
+        color: var(--text-muted);
+    }
+
+    .toggle-password {
+        position: absolute;
+        right: 14px;
+        top: 50%;
+        transform: translateY(-50%);
+        cursor: pointer;
+        z-index: 10;
+        background: transparent;
+        border: 0;
+        font-size: 1.2rem;
+        line-height: 1;
+        padding: 4px 6px;
+        user-select: none;
+        color: var(--text-muted);
+        transition: color 0.2s;
+    }
+
+    .toggle-password:hover {
+        color: var(--accent);
+    }
+
+    .btn-register {
+        background: var(--accent-gradient);
+        border: 0;
+        border-radius: 12px;
+        padding: 0.75rem;
+        font-weight: 600;
+        color: white;
+        width: 100%;
+    }
+
+    .btn-register:hover {
+        color: white;
+        box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+    }
+
+    .social-register .btn-outline-secondary {
+        border-radius: 50px;
+        border-color: var(--border-color);
+        color: var(--text-primary);
+        flex: 1;
+    }
+
+    .divider {
+        display: flex;
+        align-items: center;
+        margin: 1.5rem 0;
+        color: var(--text-muted);
+        font-size: 0.85rem;
+    }
+
+    .divider::before,
+    .divider::after {
+        content: "";
+        flex: 1;
+        border-top: 1px solid var(--border-color);
+    }
+
+    .divider::before { margin-right: 1rem; }
+    .divider::after { margin-left: 1rem; }
+
+    .form-check-input:checked {
+        background-color: var(--accent);
+        border-color: var(--accent);
+    }
+
+    .terms-link {
+        color: var(--accent);
+        text-decoration: none;
+    }
+
+    .terms-link:hover { text-decoration: underline; }
+
+    .password-hint {
+        font-size: 0.8rem;
+        color: var(--text-muted);
+        margin-top: -0.5rem;
+        margin-bottom: 1rem;
+    }
+
+    #passwordError {
+        color: #e53e3e;
+        font-size: 0.9rem;
+        margin-top: 0.25rem;
+        display: none;
+    }
+
+    @media (max-width: 768px) {
+        .register-left { min-height: 260px; padding: 2.25rem 1.5rem; align-items: center; text-align: center; }
+        .register-left h2 { font-size: 1.8rem; }
+        .register-left img { max-width: 95px; }
+        .register-wrapper { padding: 1rem; margin-inline: -0.75rem; }
+        .register-right { padding: 2rem 1.25rem; }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="register-wrapper">
+    <div class="register-card">
+        <div class="row g-0">
+            <div class="col-md-5 register-left">
+                <img src="https://img.icons8.com/fluency/240/000000/artificial-intelligence.png" alt="Artificial intelligence illustration">
+                <h2>Start with a clearer picture.</h2>
+                <p>Create your Digital Twin and bring your financial, study, fitness, and goal data together.</p>
+                <div class="mt-3">
+                    <span class="badge bg-light text-dark me-1">Free</span>
+                    <span class="badge bg-light text-dark">Secure</span>
+                </div>
+            </div>
+
+            <div class="col-md-7 register-right">
+                <h3>Create Account</h3>
+                <p class="subtitle">Start your journey with a personalised Digital Twin.</p>
+
+                <form id="registerForm" method="POST" onsubmit="return validateForm()">
+                    <input type="text" name="honeypot" id="honeypot" tabindex="-1" autocomplete="off" aria-hidden="true" style="display:none !important; visibility:hidden; position:absolute; left:-9999px;">
+
+                    <div class="form-floating position-relative">
+                        <input type="text" name="fullname" id="fullname" class="form-control" placeholder="Full Name" required>
+                        <label for="fullname"><i class="fas fa-user me-2"></i>Full Name</label>
+                    </div>
+
+                    <div class="form-floating position-relative">
+                        <input type="text" name="username" id="username" class="form-control" placeholder="Username" required>
+                        <label for="username"><i class="fas fa-at me-2"></i>Username</label>
+                    </div>
+
+                    <div class="form-floating position-relative">
+                        <input type="email" name="email" id="email" class="form-control" placeholder="Email" required>
+                        <label for="email"><i class="fas fa-envelope me-2"></i>Email</label>
+                    </div>
+
+                    <div class="form-floating position-relative">
+                        <input type="password" name="password" id="password" class="form-control" placeholder="Password" required minlength="8">
+                        <label for="password"><i class="fas fa-lock me-2"></i>Password</label>
+                        <button class="toggle-password" type="button" onclick="togglePasswordVisibility(this)" aria-label="Show password">👁️</button>
+                    </div>
+                    <div class="password-hint">
+                        8+ characters with uppercase, lowercase, number, and special character.<br>
+                        Cannot contain your name or username.
+                    </div>
+
+                    <div class="form-floating position-relative">
+                        <input type="password" name="confirm_password" id="confirm_password" class="form-control" placeholder="Confirm Password" required>
+                        <label for="confirm_password"><i class="fas fa-check-circle me-2"></i>Confirm Password</label>
+                        <button class="toggle-password" type="button" onclick="togglePasswordVisibility(this)" aria-label="Show password">👁️</button>
+                    </div>
+
+                    <div id="passwordError" role="alert"></div>
+
+                    <div class="form-check mb-3">
+                        <input class="form-check-input" type="checkbox" id="terms" name="terms" required>
+                        <label class="form-check-label" for="terms" style="font-size: 0.9rem;">
+                            I agree to the <a href="{{ url_for('terms') }}" class="terms-link">Terms of Service</a> and <a href="{{ url_for('privacy') }}" class="terms-link">Privacy Policy</a>.
+                        </label>
+                    </div>
+
+                    <button type="submit" class="btn btn-register">
+                        <i class="fas fa-user-plus me-2"></i>Create Account
+                    </button>
+                </form>
+
+                <div class="divider">or sign up with</div>
+                <div class="social-register d-flex gap-2">
+                    <button class="btn btn-outline-secondary" type="button" onclick="alert('Social sign-up coming soon!')">
+                        <i class="fab fa-google me-1"></i> Google
+                    </button>
+                    <button class="btn btn-outline-secondary" type="button" onclick="alert('Social sign-up coming soon!')">
+                        <i class="fab fa-github me-1"></i> GitHub
+                    </button>
+                </div>
+
+                <p class="mt-4 text-center text-muted" style="font-size: 0.95rem;">
+                    Already have an account? <a href="{{ url_for('login') }}" class="terms-link fw-semibold">Log in</a>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function togglePasswordVisibility(button) {
+        const input = button.closest('.form-floating').querySelector('input');
+        const isHidden = input.type === 'password';
+        input.type = isHidden ? 'text' : 'password';
+        button.textContent = isHidden ? '🙈' : '👁️';
+        button.setAttribute('aria-label', isHidden ? 'Hide password' : 'Show password');
+    }
+
+    function validateForm() {
+        const fullname = document.getElementById('fullname').value.trim();
+        const username = document.getElementById('username').value.trim();
+        const password = document.getElementById('password').value;
+        const confirm = document.getElementById('confirm_password').value;
+        const errorDiv = document.getElementById('passwordError');
+        const showError = (message) => {
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+        };
+
+        errorDiv.style.display = 'none';
+        if (document.getElementById('honeypot').value) return false;
+        if (password.length < 8) return showError('Password must be at least 8 characters.'), false;
+        if (!/[A-Z]/.test(password) || !/[a-z]/.test(password) || !/\d/.test(password) || !/[^A-Za-z0-9]/.test(password)) {
+            return showError('Password must include uppercase, lowercase, number, and special character.'), false;
+        }
+        if (fullname && password.toLowerCase().includes(fullname.toLowerCase())) return showError('Password cannot contain your full name.'), false;
+        if (username && password.toLowerCase().includes(username.toLowerCase())) return showError('Password cannot contain your username.'), false;
+        if (password !== confirm) return showError('Passwords do not match.'), false;
+        return true;
+    }
+</script>
+{% endblock %}

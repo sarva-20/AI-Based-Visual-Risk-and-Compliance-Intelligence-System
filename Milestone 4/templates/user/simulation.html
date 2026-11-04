@@ -1,0 +1,151 @@
+{% extends "base.html" %}
+
+{% block title %}Future Simulation | Visual Risk and AI Intelligence{% endblock %}
+
+{% block extra_css %}
+<style>
+    .simulation-wrapper { padding: 1.25rem; border-radius: 24px; background: linear-gradient(145deg, var(--bg-wrapper), var(--bg-card)); }
+    .simulation-hero { padding: 1.5rem; border-radius: 20px; color: white; background: var(--accent-gradient); }
+    .simulation-hero h1 { font-weight: 700; }
+    .simulation-hero p { max-width: 650px; margin-bottom: 0; opacity: 0.85; }
+    .simulation-card { height: 100%; border: 1px solid var(--border-color); border-radius: 20px; background: var(--bg-card); box-shadow: var(--shadow); }
+    .simulation-card-header { padding: 0.9rem 1.1rem; border-bottom: 1px solid var(--border-color); color: var(--text-primary); font-weight: 700; }
+    .simulation-card-body { padding: 1.1rem; }
+    .simulation-form .form-control, .simulation-form .form-select { border-radius: 10px; }
+    .simulation-form .btn { width: 100%; color: white; background: var(--accent-gradient); }
+    .simulation-form .btn:hover { color: white; box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3); }
+    .stat-tile { height: 100%; padding: 0.9rem; border: 1px solid var(--border-color); border-radius: 14px; background: var(--bg-wrapper); }
+    .stat-tile .label { color: var(--text-muted); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.04em; }
+    .stat-tile .value { color: var(--text-primary); font-size: 1.2rem; font-weight: 800; }
+    .simulation-result { padding: 1.4rem; border-radius: 20px; color: white; background: var(--accent-gradient); }
+    .simulation-result h3 { font-weight: 700; }
+    .result-stat { height: 100%; padding: 0.85rem; border: 1px solid rgba(255,255,255,0.2); border-radius: 14px; background: rgba(255,255,255,0.1); }
+    .result-stat .label { font-size: 0.75rem; opacity: 0.75; }
+    .result-stat .value { font-weight: 700; }
+    .risk-badge { display: inline-block; padding: 0.3rem 0.8rem; border-radius: 99px; font-size: 0.75rem; font-weight: 700; }
+    .risk-low { background: #48bb78; }
+    .risk-medium { background: #ed8936; }
+    .risk-high { background: #e53e3e; }
+    .comparison { height: 8px; margin-top: 0.5rem; overflow: hidden; border-radius: 99px; background: rgba(255,255,255,0.2); }
+    .comparison span { display: block; height: 100%; border-radius: inherit; background: #9ae6b4; }
+    .empty-state { padding: 3rem 1rem; color: var(--text-muted); text-align: center; }
+    .empty-state i { margin-bottom: 1rem; color: var(--accent); font-size: 2.8rem; opacity: 0.6; }
+    .history-row { padding: 0.8rem 1.1rem; border-bottom: 1px solid var(--border-color); }
+    .history-row:last-child { border-bottom: 0; }
+    .history-row .scenario { color: var(--text-primary); font-weight: 700; }
+    .history-row .meta { color: var(--text-muted); font-size: 0.76rem; }
+    @media (max-width: 768px) {
+        .simulation-wrapper { padding: 0.6rem; }
+        .simulation-hero { padding: 1.2rem; }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="simulation-wrapper">
+    <section class="simulation-hero mb-4">
+        <span class="badge bg-light text-dark mb-2">What-if analysis</span>
+        <h1 class="mb-2">Explore the impact of your next decision.</h1>
+        <p>Test practical changes across finances, studies, and fitness before you commit to them.</p>
+    </section>
+
+    <div class="row g-3 mb-4">
+        <div class="col-4"><div class="stat-tile"><div class="label">Savings</div><div class="value">₹{{ current_values.savings|round(0) }}</div></div></div>
+        <div class="col-4"><div class="stat-tile"><div class="label">GPA</div><div class="value">{{ current_values.gpa }}</div></div></div>
+        <div class="col-4"><div class="stat-tile"><div class="label">Fitness</div><div class="value">{{ current_values.fitness|round(0) }}m</div></div></div>
+    </div>
+
+    <div class="row g-3">
+        <div class="col-lg-4">
+            <section class="simulation-card">
+                <div class="simulation-card-header"><i class="fas fa-sliders me-2 text-primary"></i>Run a scenario</div>
+                <div class="simulation-card-body">
+                    <form class="simulation-form" method="post" action="{{ url_for('run_simulation') }}">
+                        <div class="mb-3">
+                            <label class="form-label small fw-semibold" for="scenario">Scenario</label>
+                            <select class="form-select" id="scenario" name="scenario">
+                                <option value="save">Save money</option>
+                                <option value="invest">Invest money</option>
+                                <option value="spend">Spend extra money</option>
+                                <option value="study_more">Study more</option>
+                                <option value="exercise">Exercise more</option>
+                            </select>
+                            <div class="form-text" id="scenarioHint">Monthly amount to save.</div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label small fw-semibold" for="amount">Amount</label>
+                            <div class="input-group">
+                                <span class="input-group-text" id="amountUnit">₹</span>
+                                <input class="form-control" id="amount" name="amount" type="number" min="0" step="1" value="5000" required>
+                            </div>
+                        </div>
+                        <button class="btn" type="submit"><i class="fas fa-play me-2"></i>Simulate outcome</button>
+                    </form>
+                </div>
+            </section>
+        </div>
+
+        <div class="col-lg-8">
+            {% if result %}
+            <section class="simulation-result">
+                <div class="d-flex justify-content-between align-items-start gap-3 mb-3">
+                    <div><small class="opacity-75">Projected outcome</small><h3 class="mb-0">{{ result.result_desc }}</h3></div>
+                    <span class="risk-badge risk-{{ result.result_risk|lower }}">{{ result.result_risk }} risk</span>
+                </div>
+                <div class="row g-3">
+                    <div class="col-md-6"><div class="result-stat"><div class="label">Impact</div><div class="value">{{ result.result_impact }}</div></div></div>
+                    <div class="col-md-6"><div class="result-stat"><div class="label">Recommendation</div><div class="value">{{ result.result_rec }}</div></div></div>
+                    <div class="col-6"><div class="result-stat"><div class="label">Current</div><div class="value">{{ result.current|round(2) }}</div></div></div>
+                    <div class="col-6"><div class="result-stat"><div class="label">Projected</div><div class="value">{{ result.projected|round(2) }}</div></div></div>
+                </div>
+                {% set max_value = [result.current|abs, result.projected|abs, 1]|max %}
+                <div class="mt-3 small d-flex justify-content-between"><span>Current</span><span>Projected</span></div>
+                <div class="comparison"><span style="width: {{ ((result.projected|abs / max_value) * 100)|round(0) }}%;"></span></div>
+            </section>
+            {% else %}
+            <section class="simulation-card">
+                <div class="empty-state"><i class="fas fa-wand-magic-sparkles"></i><p class="mb-1 fw-semibold">Your simulation will appear here.</p><small>Choose a scenario to see its projected impact.</small></div>
+            </section>
+            {% endif %}
+        </div>
+    </div>
+
+    <section class="simulation-card mt-3">
+        <div class="simulation-card-header d-flex justify-content-between"><span><i class="fas fa-history me-2 text-info"></i>Recent simulations</span><span class="badge bg-light text-dark">{{ history|length }}</span></div>
+        {% for entry in history %}
+        <div class="history-row d-flex justify-content-between align-items-center gap-3">
+            <div><div class="scenario">{{ entry.scenario.replace('_', ' ')|title }}</div><div class="meta">{{ entry.timestamp.strftime('%d %b %Y, %I:%M %p') }} · Amount: {{ entry.amount|round(2) }}</div></div>
+            <span class="risk-badge risk-{{ entry.result_risk|lower }}">{{ entry.result_risk }}</span>
+        </div>
+        {% else %}
+        <div class="empty-state py-4"><small>No simulations yet. Run your first scenario above.</small></div>
+        {% endfor %}
+    </section>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    const scenario = document.getElementById('scenario');
+    const amountUnit = document.getElementById('amountUnit');
+    const amount = document.getElementById('amount');
+    const scenarioHint = document.getElementById('scenarioHint');
+    const scenarioDetails = {
+        save: ['₹', 'Monthly amount to save.'],
+        invest: ['₹', 'Monthly amount to invest.'],
+        spend: ['₹', 'Additional monthly spending.'],
+        study_more: ['hrs', 'Additional study hours per week.'],
+        exercise: ['min', 'Additional exercise minutes per day.']
+    };
+
+    function updateScenarioFields() {
+        const details = scenarioDetails[scenario.value];
+        amountUnit.textContent = details[0];
+        scenarioHint.textContent = details[1];
+        amount.step = scenario.value === 'save' || scenario.value === 'invest' || scenario.value === 'spend' ? '500' : '1';
+        amount.value = scenario.value === 'study_more' ? '3' : scenario.value === 'exercise' ? '30' : '5000';
+    }
+
+    scenario.addEventListener('change', updateScenarioFields);
+</script>
+{% endblock %}

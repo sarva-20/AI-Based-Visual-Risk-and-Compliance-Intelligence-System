@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+
+{% block title %}{{ user.username }} | Admin User Detail{% endblock %}
+
+{% block extra_css %}
+<style>
+    .detail-wrapper { padding: 1.25rem; border-radius: 24px; background: linear-gradient(145deg, var(--bg-wrapper), var(--bg-card)); }
+    .profile-card, .detail-card { height: 100%; border: 1px solid var(--border-color); border-radius: 20px; background: var(--bg-card); box-shadow: var(--shadow); }
+    .profile-card { padding: 1.4rem; text-align: center; }
+    .avatar { width: 76px; height: 76px; display: inline-flex; align-items: center; justify-content: center; border-radius: 50%; color: white; background: var(--accent-gradient); font-size: 2rem; font-weight: 800; }
+    .detail-card { padding: 1.1rem; }
+    .metric-value { color: var(--text-primary); font-size: 1.55rem; font-weight: 800; }
+    .metric-label, .detail-card small { color: var(--text-muted); font-size: 0.76rem; }
+    .detail-list { padding: 0; margin: 0; list-style: none; }
+    .detail-list li { display: flex; justify-content: space-between; gap: 1rem; padding: 0.65rem 0; border-bottom: 1px solid var(--border-color); color: var(--text-primary); }
+    .detail-list li:last-child { border-bottom: 0; }
+    .edit-card { padding: 1.1rem; border: 1px solid var(--border-color); border-radius: 20px; background: var(--bg-card); box-shadow: var(--shadow); }
+    .edit-card label { color: var(--text-muted); font-size: 0.78rem; font-weight: 600; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="detail-wrapper">
+    <div class="d-flex justify-content-between align-items-center mb-4"><h2 class="fw-bold mb-0"><i class="fas fa-user-circle text-primary me-2"></i>User detail</h2><a class="btn btn-outline-primary rounded-pill" href="{{ url_for('admin_users') }}"><i class="fas fa-arrow-left me-1"></i>All users</a></div>
+    <div class="row g-3 mb-3">
+        <div class="col-lg-4"><section class="profile-card"><div class="avatar mb-3">{{ user.username[0]|upper }}</div><h3 class="fw-bold mb-1">{{ user.username }}</h3><p class="text-muted mb-3">{{ user.email }}</p><span class="badge">{{ 'Administrator' if user.is_admin else 'Standard user' }}</span><hr><div class="text-start small"><div><strong>Joined:</strong> {{ user.created_at.strftime('%d %b %Y') }}</div><div><strong>Occupation:</strong> {{ user.occupation }}</div><div><strong>Age:</strong> {{ user.age }}</div></div></section></div>
+        <div class="col-lg-8"><div class="row g-3 h-100">
+            {% for label, value in [('Transactions', total_transactions), ('Study logs', total_study_logs), ('Fitness logs', total_fitness_logs), ('Goals', total_goals)] %}
+            <div class="col-6"><section class="detail-card"><div class="metric-label">{{ label }}</div><div class="metric-value">{{ value }}</div></section></div>
+            {% endfor %}
+            <div class="col-6"><section class="detail-card"><div class="metric-label">Income</div><div class="metric-value">₹{{ metrics.income|round(0) }}</div></section></div>
+            <div class="col-6"><section class="detail-card"><div class="metric-label">Savings rate</div><div class="metric-value">{{ metrics.rate|round(1) }}%</div></section></div>
+        </div></div>
+    </div>
+
+    <div class="row g-3">
+        <div class="col-lg-4"><section class="detail-card"><h6 class="fw-bold"><i class="fas fa-wallet text-success me-2"></i>Financial summary</h6><ul class="detail-list"><li><span>Expenses</span><strong>₹{{ metrics.expenses|round(0) }}</strong></li><li><span>Net</span><strong>₹{{ metrics.net|round(0) }}</strong></li><li><span>Current savings</span><strong>₹{{ user.savings|round(0) }}</strong></li></ul></section></div>
+        <div class="col-lg-4"><section class="detail-card"><h6 class="fw-bold"><i class="fas fa-book text-primary me-2"></i>Study summary</h6><ul class="detail-list"><li><span>Estimated GPA</span><strong>{{ gpa.gpa }} / 4.0</strong></li><li><span>Efficiency</span><strong>{{ gpa.efficiency }}%</strong></li><li><span>Recommendation</span><strong>{{ gpa.recommendation }}</strong></li></ul></section></div>
+        <div class="col-lg-4"><section class="detail-card"><h6 class="fw-bold"><i class="fas fa-flag-checkered text-warning me-2"></i>Goal progress</h6><div class="metric-value">{{ achieved_goals }} / {{ total_goals }}</div><small>Goals achieved</small></section></div>
+    </div>
+
+    <div class="row g-3 mt-1">
+        <div class="col-lg-4"><section class="detail-card"><h6 class="fw-bold">Recent transactions</h6><ul class="detail-list">{% for item in recent_transactions %}<li><span>{{ item.category }}</span><strong>₹{{ item.amount|round(0) }}</strong></li>{% else %}<li class="text-muted">No transactions.</li>{% endfor %}</ul></section></div>
+        <div class="col-lg-4"><section class="detail-card"><h6 class="fw-bold">Recent study</h6><ul class="detail-list">{% for item in recent_study %}<li><span>{{ item.subject or 'General study' }}</span><strong>{{ item.hours }}h</strong></li>{% else %}<li class="text-muted">No study logs.</li>{% endfor %}</ul></section></div>
+        <div class="col-lg-4"><section class="detail-card"><h6 class="fw-bold">Recent fitness</h6><ul class="detail-list">{% for item in recent_fitness %}<li><span>{{ item.activity }}</span><strong>{{ item.duration_min }}m</strong></li>{% else %}<li class="text-muted">No fitness logs.</li>{% endfor %}</ul></section></div>
+    </div>
+
+    <section class="edit-card mt-3" id="edit-user">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h6 class="fw-bold mb-0"><i class="fas fa-user-pen text-primary me-2"></i>Edit user details</h6>
+            <span class="text-muted small">Admin-only update</span>
+        </div>
+        <form method="post" action="{{ url_for('admin_edit_user', user_id=user.id) }}">
+            <div class="row g-3">
+                <div class="col-md-4"><label for="username">Username</label><input class="form-control" id="username" name="username" value="{{ user.username }}" required></div>
+                <div class="col-md-4"><label for="email">Email</label><input class="form-control" id="email" name="email" type="email" value="{{ user.email }}" required></div>
+                <div class="col-md-4"><label for="occupation">Occupation</label><input class="form-control" id="occupation" name="occupation" value="{{ user.occupation }}"></div>
+                <div class="col-md-2"><label for="age">Age</label><input class="form-control" id="age" name="age" type="number" min="1" max="120" value="{{ user.age }}"></div>
+                <div class="col-md-2"><label for="monthly_income">Monthly income</label><input class="form-control" id="monthly_income" name="monthly_income" type="number" min="0" step="0.01" value="{{ user.monthly_income }}"></div>
+                <div class="col-md-2"><label for="monthly_expenses">Monthly expenses</label><input class="form-control" id="monthly_expenses" name="monthly_expenses" type="number" min="0" step="0.01" value="{{ user.monthly_expenses }}"></div>
+                <div class="col-md-2"><label for="savings">Savings</label><input class="form-control" id="savings" name="savings" type="number" min="0" step="0.01" value="{{ user.savings }}"></div>
+                <div class="col-md-2"><label for="study_hours_per_week">Study hours/week</label><input class="form-control" id="study_hours_per_week" name="study_hours_per_week" type="number" min="0" step="0.5" value="{{ user.study_hours_per_week }}"></div>
+                <div class="col-md-2"><label for="fitness_hours_per_week">Fitness hours/week</label><input class="form-control" id="fitness_hours_per_week" name="fitness_hours_per_week" type="number" min="0" step="0.5" value="{{ user.fitness_hours_per_week }}"></div>
+                <div class="col-md-2"><label for="sleep_hours_per_day">Sleep hours/day</label><input class="form-control" id="sleep_hours_per_day" name="sleep_hours_per_day" type="number" min="0" max="24" step="0.5" value="{{ user.sleep_hours_per_day }}"></div>
+                {% if current_user.id != user.id %}<div class="col-md-3 d-flex align-items-end"><div class="form-check mb-2"><input class="form-check-input" id="is_admin" name="is_admin" type="checkbox" {% if user.is_admin %}checked{% endif %}><label class="form-check-label" for="is_admin">Administrator role</label></div></div>{% endif %}
+                <div class="col-12"><button class="btn btn-primary rounded-pill" type="submit"><i class="fas fa-save me-2"></i>Save user details</button></div>
+            </div>
+        </form>
+    </section>
+</div>
+{% endblock %}
