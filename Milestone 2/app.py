@@ -1,5 +1,6 @@
 from collections import defaultdict
 from datetime import datetime, timedelta
+import math
 import os
 from pathlib import Path
 
@@ -332,7 +333,74 @@ def admin_users():
 @app.route("/user/simulation")
 @login_required
 def user_simulation():
-    return _simple_page("Simulation", "Scenario simulation is ready for configuration.")
+    current_gpa = predict_gpa(current_user)["gpa"]
+    current_fitness = sum(log.duration_min for log in current_user.fitness_logs)
+    result = None
+    result_id = request.args.get("result", type=int)
+    if result_id:
+        result = SimulationHistory.query.filter_by(id=result_id, user_id=current_user.id).first()
+    current_values = {
+        "savings": current_user.savings,
+        "gpa": current_gpa,
+        "fitness": current_fitness,
+    }
+    return render_template(
+        "user/simulation.html",
+        user=current_user,
+        current_values=current_values,
+        result=result,
+        history=SimulationHistory.query.filter_by(user_id=current_user.id).order_by(SimulationHistory.timestamp.desc()).limit(10).all(),
+    )
+
+
+@app.route("/user/simulation/run", methods=["POST"])
+@login_required
+def run_simulation():
+    scenario = request.form.get("scenario", "save")
+    allowed_scenarios = {"save", "invest", "spend", "study_more", "exercise"}
+    if scenario not in allowed_scenarios:
+        flash("Please choose a valid scenario.", "warning")
+        return redirect(url_for("user_simulation"))
+
+    try:
+        amount = float(request.form.get("amount", "0"))
+    except ValueError:
+        amount = -1
+    if not math.isfinite(amount) or amount < 0:
+        flash("Enter a non-negative amount for the simulation.", "warning")
+        return redirect(url_for("user_simulation"))
+
+    current_gpa = predict_gpa(current_user)["gpa"]
+    current_fitness = sum(log.duration_min for log in current_user.fitness_logs)
+    result = simulate_scenario(current_user, scenario, amount)
+    if scenario in {"save", "invest", "spend"}:
+        current = current_user.savings
+        projected = {
+            "save": current + amount * 12,
+            "invest": current + amount * 12 * 1.1,
+            "spend": current - amount * 12,
+        }[scenario]
+    elif scenario == "study_more":
+        current = current_gpa
+        projected = min(4.0, current + amount * 0.1)
+    else:
+        current = current_fitness
+        projected = current + amount * 30
+
+    history_entry = SimulationHistory(
+        user_id=current_user.id,
+        scenario=scenario,
+        amount=amount,
+        result_desc=result["desc"],
+        result_impact=result["impact"],
+        result_risk=result["risk"],
+        result_rec=result["rec"],
+        current=current,
+        projected=projected,
+    )
+    db.session.add(history_entry)
+    db.session.commit()
+    return redirect(url_for("user_simulation", result=history_entry.id))
 
 
 @app.route("/user/assistant", methods=["GET", "POST"])
