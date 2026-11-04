@@ -1,0 +1,398 @@
+{% extends "base.html" %}
+
+{% block extra_css %}
+<style>
+    .about-hero {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 5rem 0 4rem;
+        border-radius: 0 0 40px 40px;
+    }
+
+    .about-hero h1 {
+        max-width: 900px;
+        font-size: clamp(2.3rem, 6vw, 4.5rem);
+        font-weight: 700;
+        letter-spacing: 0;
+    }
+
+    .about-hero p {
+        max-width: 850px;
+        font-size: 1.15rem;
+        opacity: 0.93;
+    }
+
+    .about-section {
+        padding: 4rem 0;
+    }
+
+    .about-card,
+    .stack-card {
+        height: 100%;
+        border: 0;
+        border-radius: 16px;
+        transition: transform 0.25s ease, box-shadow 0.25s ease;
+    }
+
+    .about-card:hover,
+    .stack-card:hover {
+        transform: translateY(-5px);
+    }
+
+    .about-icon {
+        width: 56px;
+        height: 56px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 14px;
+        color: white;
+        font-size: 1.25rem;
+        background: var(--accent-gradient);
+    }
+
+    .section-label {
+        color: var(--accent);
+        letter-spacing: 0.08em;
+    }
+
+    .analytics-item {
+        height: 100%;
+        border-left: 3px solid var(--accent);
+        padding: 0.25rem 0 0.25rem 1rem;
+    }
+
+    .analytics-item h3 {
+        color: var(--accent);
+    }
+
+    .stack-card strong {
+        display: block;
+        font-size: 1.05rem;
+        color: var(--text-primary);
+    }
+
+    .stack-card span {
+        color: var(--text-muted);
+        font-size: 0.9rem;
+    }
+
+    .schema-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.7rem 1rem;
+        margin: 0.3rem;
+        border: 1px solid var(--border-color);
+        border-radius: 999px;
+        background: var(--bg-card);
+        box-shadow: var(--shadow);
+    }
+
+    .metric-line {
+        border-left: 3px solid var(--accent);
+        padding-left: 1rem;
+    }
+
+    .about-cta {
+        background: var(--bg-wrapper);
+        border: 1px solid var(--border-color);
+        border-radius: 24px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="about-hero">
+    <div class="container">
+        <span class="badge-light-custom mb-3 d-inline-block">Project overview</span>
+        <h1>AI-Based Visual Risk and Compliance Intelligence System</h1>
+        <p class="mb-0">
+            An intelligent personal decision-support system that creates a digital representation
+            of a user's habits, behaviors, financial activities, study patterns, and lifestyle choices.
+        </p>
+    </div>
+</section>
+
+<main class="container">
+    <section class="about-section">
+        <div class="row align-items-center g-5">
+            <div class="col-lg-7">
+                <p class="section-label text-uppercase small fw-semibold mb-2">Project summary</p>
+                <h2 class="display-6 fw-bold mb-3">Understand your present. Plan your next move.</h2>
+                <p class="lead text-muted">
+                    The platform leverages <strong>AI, Machine Learning, and Predictive Analytics</strong>
+                    to forecast future outcomes and provide personalized recommendations before users
+                    make decisions.
+                </p>
+                <p class="text-muted mb-0">
+                    Digital Twin AI combines financial tracking, academic monitoring, fitness logging,
+                    goal management, AI-powered predictions, and future simulation in one responsive
+                    workspace for individuals and administrators.
+                </p>
+            </div>
+            <div class="col-lg-5">
+                <div class="card about-card p-4">
+                    <div class="about-icon mb-3"><i class="fas fa-brain"></i></div>
+                    <h3 class="h4">From data to decisions</h3>
+                    <p class="text-muted mb-0">
+                        See your current state, review historical patterns, explore possible outcomes,
+                        and receive personalized guidance in a single view.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="pb-5">
+        <div class="text-center mb-4">
+            <p class="section-label text-uppercase small fw-semibold mb-2">Key features</p>
+            <h2 class="h1 fw-bold">One platform for everyday intelligence</h2>
+        </div>
+        <div class="row g-4">
+            {% set features = [
+                ('chart-pie', 'Personal Dashboard', 'Unified view of savings, GPA, fitness, goals, and other life metrics.'),
+                ('wallet', 'Financial Management', 'Track income and expenses with forecasts and spending analytics.'),
+                ('book-open', 'Study Intelligence', 'Log study sessions, predict GPA, and track productivity.'),
+                ('heartbeat', 'Fitness Monitoring', 'Track activities, calories, weekly goals, and activity streaks.'),
+                ('flask', 'Future Simulation', 'Run what-if analysis for financial, academic, and fitness decisions.'),
+                ('comments', 'AI Assistant', 'Use a Gemini-powered conversational assistant for personalized advice.'),
+                ('bullseye', 'Goal Tracking', 'Set, track, and achieve goals with progress monitoring.'),
+                ('user-shield', 'Admin Panel', 'Manage users, review platform analytics, and monitor activity.')
+            ] %}
+            {% for icon, title, description in features %}
+            <div class="col-md-6 col-xl-3">
+                <div class="card about-card p-4">
+                    <div class="about-icon mb-3"><i class="fas fa-{{ icon }}"></i></div>
+                    <h3 class="h5">{{ title }}</h3>
+                    <p class="text-muted mb-0">{{ description }}</p>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+
+    <section class="about-section border-top">
+        <div class="text-center mb-5">
+            <p class="section-label text-uppercase small fw-semibold mb-2">Predictive analytics</p>
+            <h2 class="h1 fw-bold">See possible outcomes before they happen</h2>
+        </div>
+        <div class="row g-4">
+            <div class="col-md-6">
+                <div class="analytics-item">
+                    <h3 class="h4">Savings Forecast</h3>
+                    <p class="text-muted mb-0">Six-month financial projection based on spending patterns.</p>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="analytics-item">
+                    <h3 class="h4">GPA Prediction</h3>
+                    <p class="text-muted mb-0">Academic performance forecasting based on study habits.</p>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="analytics-item">
+                    <h3 class="h4">Fitness Projection</h3>
+                    <p class="text-muted mb-0">Thirty-day activity prediction based on current trends.</p>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="analytics-item">
+                    <h3 class="h4">Life Score</h3>
+                    <p class="text-muted mb-0">Composite index combining finance, academics, fitness, and goals.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="about-section border-top">
+        <div class="row g-4">
+            <div class="col-lg-6">
+                <p class="section-label text-uppercase small fw-semibold mb-2">Technology stack</p>
+                <h2 class="h1 fw-bold mb-3">Built for practical intelligence</h2>
+                <p class="text-muted">
+                    The system combines a Python and Flask backend, predictive models, secure data
+                    handling, and a responsive visual interface.
+                </p>
+            </div>
+            <div class="col-lg-6">
+                <div class="row g-3">
+                    {% set stack = [
+                        ('Python 3.13+', 'Core programming language'),
+                        ('Flask 2.3.3', 'Web framework'),
+                        ('Flask-SQLAlchemy', 'Database ORM'),
+                        ('Flask-Login', 'Authentication and sessions'),
+                        ('SQLite / PostgreSQL', 'Development / production database'),
+                        ('scikit-learn', 'Linear Regression forecasting'),
+                        ('NumPy', 'Numerical computations'),
+                        ('Google Gemini AI', 'Optional conversational assistant'),
+                        ('Bootstrap 5', 'Responsive UI framework'),
+                        ('Chart.js', 'Interactive visualizations'),
+                        ('Font Awesome', 'Interface icons'),
+                        ('Jinja2', 'Template engine')
+                    ] %}
+                    {% for technology, purpose in stack %}
+                    <div class="col-sm-6">
+                        <div class="card stack-card p-3">
+                            <strong>{{ technology }}</strong>
+                            <span>{{ purpose }}</span>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                <p class="small text-muted mt-3 mb-0">
+                    Development tools include python-dotenv for environment variables, Git for version
+                    control, and PyCharm as a recommended IDE.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <section class="about-section border-top">
+        <div class="row g-5 align-items-center">
+            <div class="col-lg-6">
+                <p class="section-label text-uppercase small fw-semibold mb-2">Data foundation</p>
+                <h2 class="h1 fw-bold mb-3">A connected personal data model</h2>
+                <p class="text-muted mb-4">
+                    Core records connect identity, activity, goals, financial decisions, learning,
+                    fitness, and AI conversations.
+                </p>
+                <div>
+                    {% set tables = [
+                        ('user', 'User', 'Profile, credentials, and preferences'),
+                        ('receipt', 'Transaction', 'Income and expense tracking'),
+                        ('book', 'StudyLog', 'Study sessions, hours, and productivity'),
+                        ('running', 'FitnessLog', 'Activities, duration, and calories'),
+                        ('flag-checkered', 'Goal', 'Personal goals and progress'),
+                        ('comments', 'ChatMessage', 'AI conversation history')
+                    ] %}
+                    {% for icon, table, description in tables %}
+                    <span class="schema-pill"><i class="fas fa-{{ icon }} text-primary"></i><strong>{{ table }}</strong><span class="small text-muted">{{ description }}</span></span>
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="card about-card p-4">
+                    <h3 class="h4 mb-3">Security by design</h3>
+                    <ul class="text-muted mb-0">
+                        <li class="mb-2">Password hashing with Werkzeug</li>
+                        <li class="mb-2">Flask-Login authentication and session management</li>
+                        <li class="mb-2">Role-based access control for Admin and User roles</li>
+                        <li class="mb-2">CSRF protection for application forms</li>
+                        <li>Environment variables for sensitive configuration</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="about-section border-top">
+        <div class="text-center mb-5">
+            <p class="section-label text-uppercase small fw-semibold mb-2">Key functionalities</p>
+            <h2 class="h1 fw-bold">A complete decision-support workflow</h2>
+        </div>
+        <div class="row g-4">
+            {% set workflows = [
+                ('User Authentication', 'Register with username, email, and password. Log in securely with Admin/User role access.'),
+                ('User Dashboard', 'Review metric cards, profile details, goals, charts, predictive insights, and recent activity.'),
+                ('Financial Management', 'Add transactions, view category breakdowns, forecast expenses, and review savings rate.'),
+                ('Study Intelligence', 'Log hours, subjects, and productivity while reviewing GPA, trends, subjects, and streaks.'),
+                ('Fitness Tracking', 'Log activity, duration, and calories while monitoring weekly goals, trends, and streaks.'),
+                ('Simulation Engine', 'Compare Save, Invest, Spend, Study More, and Exercise scenarios with impact and risk analysis.'),
+                ('AI Assistant', 'Use Gemini with fallback support for personalized advice, quick actions, and chat analytics.'),
+                ('Admin Panel', 'Review platform metrics, user growth, active users, subjects, activities, and recent activity.')
+            ] %}
+            {% for title, description in workflows %}
+            <div class="col-md-6">
+                <div class="card about-card p-4">
+                    <h3 class="h5"><span class="text-primary me-2">{{ loop.index }}.</span>{{ title }}</h3>
+                    <p class="text-muted mb-0">{{ description }}</p>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+
+    <section class="about-section border-top">
+        <div class="row g-4">
+            <div class="col-lg-7">
+                <p class="section-label text-uppercase small fw-semibold mb-2">What the system measures</p>
+                <h2 class="h1 fw-bold mb-4">Signals that show the bigger picture</h2>
+                <div class="row g-3">
+                    <div class="col-sm-6"><div class="metric-line"><strong>Financial</strong><p class="text-muted mb-0">Savings, income, expenses, savings rate, and net savings.</p></div></div>
+                    <div class="col-sm-6"><div class="metric-line"><strong>Academic</strong><p class="text-muted mb-0">GPA, study efficiency, total hours, and study streak.</p></div></div>
+                    <div class="col-sm-6"><div class="metric-line"><strong>Fitness</strong><p class="text-muted mb-0">Activity, calories burned, daily average, and streak.</p></div></div>
+                    <div class="col-sm-6"><div class="metric-line"><strong>Goals</strong><p class="text-muted mb-0">Total goals, achieved goals, and completion rate.</p></div></div>
+                </div>
+            </div>
+            <div class="col-lg-5">
+                <div class="card about-card p-4">
+                    <div class="about-icon mb-3"><i class="fas fa-star"></i></div>
+                    <h3 class="h4">Life Score</h3>
+                    <p class="text-muted mb-0">
+                        A composite health index from 0 to 100% combining finance, academics,
+                        fitness, and goals.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="about-section border-top">
+        <div class="row g-4">
+            <div class="col-lg-6">
+                <p class="section-label text-uppercase small fw-semibold mb-2">Deployment</p>
+                <h2 class="h2 fw-bold">Ready for local development and production growth</h2>
+                <p class="text-muted mb-0">
+                    Development uses SQLite, while PostgreSQL can support production deployment.
+                    Sensitive values are configured through environment variables.
+                </p>
+            </div>
+            <div class="col-lg-6">
+                <div class="card stack-card p-4">
+                    <h3 class="h5">Environment variables</h3>
+                    <code class="d-block mb-2">SECRET_KEY=your-secret-key</code>
+                    <code class="d-block">GEMINI_API_KEY=your-gemini-api-key</code>
+                    <p class="small text-muted mt-3 mb-0">The Gemini key is optional; the assistant can use its fallback behavior without it.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="about-section border-top">
+        <div class="text-center mb-5">
+            <p class="section-label text-uppercase small fw-semibold mb-2">Why it stands out</p>
+            <h2 class="h1 fw-bold">Seven ideas behind the system</h2>
+        </div>
+        <div class="row g-3">
+            {% set strengths = [
+                'Digital Twin Concept - A digital replica of your lifestyle.',
+                'All-in-One Platform - Finance, study, fitness, and goals together.',
+                'AI-Powered Predictions - Machine learning for future forecasting.',
+                'Interactive Visualizations - Real-time charts and analytics.',
+                'Personalized Recommendations - Guidance based on user data.',
+                'Future Simulation - Test decisions before making them.',
+                'Admin Oversight - Platform management and user analytics.'
+            ] %}
+            {% for strength in strengths %}
+            <div class="col-md-6 col-lg-4">
+                <div class="card stack-card p-3 h-100">
+                    <p class="mb-0 text-muted"><i class="fas fa-check-circle text-primary me-2"></i>{{ strength }}</p>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+
+    <section class="about-cta p-4 p-md-5 mb-5 text-center">
+        <h2 class="h2 fw-bold">Current state. Historical analysis. Future insight.</h2>
+        <p class="text-muted mb-4">
+            Digital Twin AI helps users make data-driven decisions with prediction, simulation,
+            and personalized guidance.
+        </p>
+        <a class="btn btn-primary px-4" href="{{ url_for('index') }}">
+            Return to home <i class="fas fa-arrow-right ms-2"></i>
+        </a>
+    </section>
+</main>
+{% endblock %}
