@@ -312,6 +312,9 @@ data-bs-toggle="dropdown">
  <li><a class="dropdown-item" href="{{ url_for('admin_users') }}">
  <i class="fas fa-users me-2"></i>Manage Users
  </a></li>
+ <li><a class="dropdown-item" href="{{ url_for('admin_user_detail', user_id=current_user.id) }}#edit-user">
+ <i class="fas fa-user-pen me-2"></i>Edit Admin Details
+ </a></li>
  <li><hr class="dropdown-divider"></li>
  <li><a class="dropdown-item" href="{{ url_for('user_dashboard') }}">
  <i class="fas fa-user me-2"></i>My Profile
