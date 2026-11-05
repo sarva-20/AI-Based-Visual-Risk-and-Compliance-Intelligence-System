@@ -21,7 +21,7 @@
 
 {% block content %}
 <div class="detail-wrapper">
-    <div class="d-flex justify-content-between align-items-center mb-4"><h2 class="fw-bold mb-0"><i class="fas fa-user-circle text-primary me-2"></i>User detail</h2><a class="btn btn-outline-primary rounded-pill" href="{{ url_for('admin_users') }}"><i class="fas fa-arrow-left me-1"></i>All users</a></div>
+    <div class="d-flex justify-content-between align-items-center mb-4"><h2 class="fw-bold mb-0"><i class="fas fa-user-circle text-primary me-2"></i>{{ 'Administrator profile' if current_user.id == user.id else 'User detail' }}</h2><a class="btn btn-outline-primary rounded-pill" href="{{ url_for('admin_users') }}"><i class="fas fa-arrow-left me-1"></i>All users</a></div>
     <div class="row g-3 mb-3">
         <div class="col-lg-4"><section class="profile-card"><div class="avatar mb-3">{{ user.username[0]|upper }}</div><h3 class="fw-bold mb-1">{{ user.username }}</h3><p class="text-muted mb-3">{{ user.email }}</p><span class="badge">{{ 'Administrator' if user.is_admin else 'Standard user' }}</span><hr><div class="text-start small"><div><strong>Joined:</strong> {{ user.created_at.strftime('%d %b %Y') }}</div><div><strong>Occupation:</strong> {{ user.occupation }}</div><div><strong>Age:</strong> {{ user.age }}</div></div></section></div>
         <div class="col-lg-8"><div class="row g-3 h-100">
