@@ -491,6 +491,7 @@ def admin_user_detail(user_id):
         user=user,
         metrics=calculate_financial_metrics(user),
         gpa=predict_gpa(user),
+        total_users=User.query.count(),
         total_transactions=len(user.transactions),
         total_study_logs=len(user.study_logs),
         total_fitness_logs=len(user.fitness_logs),
@@ -499,6 +500,71 @@ def admin_user_detail(user_id):
         recent_transactions=sorted(user.transactions, key=lambda item: item.date, reverse=True)[:5],
         recent_study=sorted(user.study_logs, key=lambda item: item.date, reverse=True)[:5],
         recent_fitness=sorted(user.fitness_logs, key=lambda item: item.date, reverse=True)[:5],
+    )
+
+
+@app.route("/admin/profile", methods=["GET", "POST"])
+@login_required
+def admin_profile():
+    if not current_user.is_admin:
+        flash("Admin access required.", "warning")
+        return redirect(url_for("user_dashboard"))
+
+    admin = current_user
+    editing = request.args.get("edit") == "1"
+    if request.method == "POST":
+        editing = True
+        username = request.form.get("username", "").strip()
+        email = request.form.get("email", "").strip()
+        occupation = request.form.get("occupation", "").strip()
+        current_password = request.form.get("current_password", "")
+        new_password = request.form.get("new_password", "")
+        confirm_password = request.form.get("confirm_password", "")
+        errors = []
+        try:
+            age = int(request.form.get("age", "0"))
+        except (TypeError, ValueError):
+            age = 0
+
+        if len(username) < 3 or len(username) > 50:
+            errors.append("Username must be between 3 and 50 characters.")
+        if not email or "@" not in email or "." not in email.rsplit("@", 1)[-1]:
+            errors.append("A valid email address is required.")
+        if not 1 <= age <= 120:
+            errors.append("Age must be between 1 and 120.")
+        if User.query.filter(User.username == username, User.id != admin.id).first():
+            errors.append("That username is already in use.")
+        if User.query.filter(User.email == email, User.id != admin.id).first():
+            errors.append("That email is already in use.")
+        if current_password or new_password or confirm_password:
+            if not current_password or not admin.check_password(current_password):
+                errors.append("Current password is incorrect.")
+            if len(new_password) < 6:
+                errors.append("New password must be at least 6 characters.")
+            if new_password != confirm_password:
+                errors.append("New passwords do not match.")
+
+        if errors:
+            for message in errors:
+                flash(message, "danger")
+        else:
+            admin.username = username
+            admin.email = email
+            admin.age = age
+            admin.occupation = occupation or "Student"
+            if new_password:
+                admin.set_password(new_password)
+            db.session.commit()
+            flash("Profile updated successfully.", "success")
+            return redirect(url_for("admin_profile"))
+
+    return render_template(
+        "admin/admin_profile.html",
+        admin=admin,
+        admin_count=User.query.count(),
+        transaction_count=Transaction.query.count(),
+        goal_count=Goal.query.count(),
+        editing=editing,
     )
 
 
