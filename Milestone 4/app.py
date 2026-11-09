@@ -929,9 +929,25 @@ def delete_study_log(id):
 @login_required
 def user_fitness():
     if request.method == "POST":
-        db.session.add(FitnessLog(user_id=current_user.id, date=_parse_date(request.form["date"]), activity=request.form.get("activity", "Other"), duration_min=int(request.form["duration"]), calories_burned=int(request.form.get("calories", 0))))
-        db.session.commit()
-        flash("Fitness activity logged.", "success")
+        try:
+            calories = int(request.form.get("calories") or 0)
+            duration = int(request.form["duration"])
+            if duration < 1 or calories < 0:
+                raise ValueError
+            db.session.add(
+                FitnessLog(
+                    user_id=current_user.id,
+                    date=_parse_date(request.form["date"]),
+                    activity=request.form.get("activity", "").strip() or "Other",
+                    duration_min=duration,
+                    calories_burned=calories,
+                )
+            )
+            db.session.commit()
+            flash("Fitness activity logged.", "success")
+        except (KeyError, ValueError):
+            db.session.rollback()
+            flash("Enter a valid date, activity, duration, and calorie value.", "warning")
         return redirect(url_for("user_fitness"))
     logs = current_user.fitness_logs
     today = datetime.now().date()
@@ -952,12 +968,20 @@ def edit_fitness(log_id):
     if log is None:
         flash("Activity not found or you do not have permission.", "danger")
         return redirect(url_for("user_fitness"))
-    log.date = _parse_date(request.form["date"])
-    log.activity = request.form["activity"]
-    log.duration_min = int(request.form["duration"])
-    log.calories_burned = int(request.form.get("calories", 0))
-    db.session.commit()
-    flash("Activity updated successfully!", "success")
+    try:
+        duration = int(request.form["duration"])
+        calories = int(request.form.get("calories") or 0)
+        if duration < 1 or calories < 0:
+            raise ValueError
+        log.date = _parse_date(request.form["date"])
+        log.activity = request.form.get("activity", "").strip() or "Other"
+        log.duration_min = duration
+        log.calories_burned = calories
+        db.session.commit()
+        flash("Activity updated successfully!", "success")
+    except (KeyError, ValueError):
+        db.session.rollback()
+        flash("Enter a valid date, activity, duration, and calorie value.", "warning")
     return redirect(url_for("user_fitness"))
 
 
