@@ -22,6 +22,7 @@ The AI-Based Visual Risk and Compliance Intelligence System is a personal decisi
 - **Future simulation:** Compares scenarios such as saving, investing, spending, studying more, or exercising more, then stores the projected outcome and risk level.
 - **AI assistant:** Provides practical guidance about finances, studies, fitness, and personal goals through optional Google Gemini integration, with an offline fallback when the provider is unavailable.
 - **Authentication and roles:** Supports registration, login, protected user pages, and administrator access.
+- **Administrator workspace:** Provides platform metrics, user search, user detail views, role management, mock accounts, and profile editing.
 
 ## Project structure
 
@@ -31,6 +32,7 @@ The project is organized into milestone folders. Each milestone contains a self-
 Milestone 1/   Initial application foundation
 Milestone 2/   Dashboard, finance, study, and fitness workflows
 Milestone 3/   Expanded assistant and future-simulation experience
+Milestone 4/   Administrator workspace and profile management
 ```
 
 ## Technology
@@ -69,6 +71,35 @@ The application uses Flask for web routing, Flask-Login for authentication, Flas
 4. The response is stored with the user's conversation history and displayed in the chat.
 5. If Gemini is unavailable, the application returns a safe offline response instead of failing.
 
+### Administrator flow
+
+1. The administrator signs in with the administrator account and opens the Admin menu.
+2. The admin dashboard displays platform-wide users, transactions, study activity, fitness activity, and goals.
+3. Manage Users provides searchable user accounts with detail and edit actions.
+4. The administrator profile shows account information and platform counts, and supports editing account details or changing the password.
+5. Administrator-only checks protect dashboard, user management, and profile routes.
+
 ### Startup and demo flow
 
-When the application starts, it creates the SQLite tables if needed, creates the default administrator account when absent, and seeds representative study and fitness records for the demo account. This allows the dashboard and analytical pages to display meaningful data immediately.
+When the application starts, it creates the SQLite tables if needed, creates the default administrator account when absent, and seeds repeat-safe demo users with transaction, study, fitness, and goal records. This allows user and administrator pages to display meaningful data immediately.
+
+## Configuration
+
+The application reads these values from the root `.env` file:
+
+- `SECRET_KEY` for Flask sessions.
+- `GEMINI_API_KEY` to enable Gemini responses.
+- `GEMINI_MODEL` to select the Gemini model; defaults to `gemini-flash-lite-latest`.
+
+The `.env` file, virtual environments, caches, and SQLite databases remain local and are excluded by `.gitignore`.
+
+## Demo accounts
+
+| Account | Username | Password |
+|---|---|---|
+| Administrator | `admin` | `admin123` |
+| Demo users | `demo.user`, `maya.sharma`, `arjun.nair`, `riya.patel` | `demo12345` |
+
+## Input handling
+
+User-owned records can be edited or deleted only by their owner. Numeric inputs are validated at the route boundary, optional fitness calories default to zero, and invalid fitness submissions return a validation message instead of an application error page.
